@@ -1,0 +1,26 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.yyf.www.project_quicknews.fragment.HomeFragment">
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tlytVideo"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_169"
+        app:tabBackground="@color/colorAccent"
+        app:tabIndicatorColor="@android:color/holo_red_dark"
+        app:tabIndicatorHeight="5dp"
+        app:tabSelectedTextColor="@color/colorGray"
+        app:tabTextAppearance="@style/TabLayoutTextStyle"
+        app:tabTextColor="@android:color/white" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vpVideo"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+</LinearLayout>

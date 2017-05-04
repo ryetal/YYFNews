@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/dimen_33">
+
+    <TextView
+        android:id="@+id/tvNewsTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="title"
+        android:textColor="#ff000000"
+        android:textSize="@dimen/dimen_54sp" />
+
+    <TextView
+        android:id="@+id/tvAbstract"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="abstract"
+        android:textColor="#cccccccc"
+        android:textSize="@dimen/dimen_34sp" />
+
+    <LinearLayout
+        android:id="@+id/llytImages"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/ivImage1"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/dimen_270"
+            android:layout_weight="1"
+            android:src="@mipmap/ic_launcher" />
+
+        <ImageView
+            android:id="@+id/ivImage2"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/dimen_270"
+            android:layout_weight="1"
+            android:src="@mipmap/ic_launcher" />
+
+        <ImageView
+            android:id="@+id/ivImage3"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/dimen_270"
+            android:layout_weight="1"
+            android:src="@mipmap/ic_launcher" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvSource"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/dimen_34"
+            android:text="source" />
+
+        <TextView
+            android:id="@+id/tvComments"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/dimen_34"
+            android:text="comments" />
+
+        <TextView
+            android:id="@+id/tvTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="time" />
+    </LinearLayout>
+
+</LinearLayout>

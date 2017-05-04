@@ -1,0 +1,21 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context="com.yyf.www.project_quicknews.fragment.SearchHotFragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_152"
+        android:background="@color/colorGray"
+        android:gravity="center_vertical"
+        android:padding="5dp"
+        android:text="历史搜索" />
+
+    <ListView
+        android:id="@+id/lvSearchHistory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>
