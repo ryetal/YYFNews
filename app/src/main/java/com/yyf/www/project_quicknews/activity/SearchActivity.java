@@ -4,18 +4,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yyf.www.project_quicknews.R;
-import com.yyf.www.project_quicknews.bean.SearchHistoryBean;
-import com.yyf.www.project_quicknews.bean.SearchKeywordBean;
+import com.yyf.www.project_quicknews.bean.event.SearchHistoryEvent;
+import com.yyf.www.project_quicknews.bean.event.SearchEvent;
 import com.yyf.www.project_quicknews.fragment.SearchHotAndHistoryFragment;
 import com.yyf.www.project_quicknews.fragment.SearchListFragment;
 import com.yyf.www.project_quicknews.view.SearchEditText;
@@ -26,7 +26,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 public class SearchActivity extends BaseActivity {
 
-    private ImageView ivBack;
+    private Toolbar tbarSearch;
     private SearchEditText etSearch;
     private FrameLayout flytContainer;
 
@@ -50,38 +50,32 @@ public class SearchActivity extends BaseActivity {
         mSearchListFragment = SearchListFragment.newInstance();
     }
 
-    /**
-     * 获取View
-     */
     @Override
     protected void getViews() {
-        ivBack = (ImageView) findViewById(R.id.ivBack);
+        super.getViews();
+
+        tbarSearch = (Toolbar) findViewById(R.id.tbarSearch);
         etSearch = (SearchEditText) findViewById(R.id.etSearch);
         flytContainer = (FrameLayout) findViewById(R.id.flytSearchContainer);
     }
 
-    /**
-     * 初始化View
-     */
     @Override
     protected void initViews() {
+        super.initViews();
 
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         transaction.add(R.id.flytSearchContainer, mSearchHotAndHistoryFragment, "searchHotAndHistory");
         transaction.add(R.id.flytSearchContainer, mSearchListFragment, "searchList");
         transaction.hide(mSearchListFragment);
         transaction.commit();
-
     }
 
-    /**
-     * 设置Listener
-     */
     @Override
     protected void setListeners() {
+        super.setListeners();
 
         //回退
-        ivBack.setOnClickListener(new View.OnClickListener() {
+        tbarSearch.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
@@ -92,7 +86,7 @@ public class SearchActivity extends BaseActivity {
         etSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                doSearch(new SearchKeywordBean(v.getText().toString()));
+                doSearch(new SearchEvent(v.getText().toString()));
                 return false;
             }
         });
@@ -108,7 +102,7 @@ public class SearchActivity extends BaseActivity {
             public void onSearch(String content) {
 
                 if (content != null && !content.equals("")) {
-                    doSearch(new SearchKeywordBean(content));
+                    doSearch(new SearchEvent(content));
                 }
             }
         });
@@ -142,11 +136,6 @@ public class SearchActivity extends BaseActivity {
     }
 
     @Override
-    protected void initDatas() {
-
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
 
@@ -154,9 +143,9 @@ public class SearchActivity extends BaseActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void doSearch(SearchKeywordBean searchKeywordBean) {
+    public void doSearch(SearchEvent searchKeywordBean) {
 
-        EventBus.getDefault().post(new SearchHistoryBean(searchKeywordBean.keyword));
+        EventBus.getDefault().post(new SearchHistoryEvent(searchKeywordBean.keyword));
 
         Intent intent = new Intent(SearchActivity.this, SearchResultActivity.class);
         Bundle bundle = new Bundle();

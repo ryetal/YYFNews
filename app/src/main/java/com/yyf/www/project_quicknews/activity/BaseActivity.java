@@ -15,17 +15,16 @@ public abstract class BaseActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        setContentView(getContentViewId());
 
         NewsApplication.addActivity(this, this);
 
-        setContentView(getContentViewId());
         init();
         getViews();
         initViews();
         setListeners();
         initDatas();
     }
-
 
     @Override
     protected void onDestroy() {
@@ -37,6 +36,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected abstract int getContentViewId();
 
     protected void init() {
+
     }
 
     protected void getViews() {

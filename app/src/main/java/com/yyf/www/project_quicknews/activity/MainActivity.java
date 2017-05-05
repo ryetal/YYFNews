@@ -22,23 +22,14 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected void init() {
-        super.init();
-    }
-
-    /**
-     * 获取View
-     */
-    @Override
     protected void getViews() {
+        super.getViews();
         mTabHost = (FragmentTabHost) this.findViewById(android.R.id.tabhost);
     }
 
-    /**
-     * 初始化View
-     */
     @Override
     protected void initViews() {
+        super.initViews();
         initTabHost();
     }
 
@@ -60,7 +51,7 @@ public class MainActivity extends BaseActivity {
     }
 
     /**
-     * generate indicator
+     * generate tab indicator
      *
      * @param title
      * @param drawableId

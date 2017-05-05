@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.yyf.www.project_quicknews.R;
 
@@ -26,10 +28,13 @@ public class LoadListView extends ListView implements AbsListView.OnScrollListen
 
     private View vFooter;
     private LinearLayout llytFooter;
+    private ProgressBar pbarFooter;
+    private TextView tvFooter;
 
     private int mLastVisibleItem;
     private int mTotalItemCount;
     private boolean isLoading;
+    private boolean isCompleteLoading;
 
     public LoadListView(Context context) {
         this(context, null);
@@ -42,16 +47,21 @@ public class LoadListView extends ListView implements AbsListView.OnScrollListen
     public LoadListView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
+        isLoading = false;
+        isCompleteLoading = false;
         setOnScrollListener(this);
-        initFooter(); //添加Footer
+        addFooter(); //添加Footer
     }
 
     /**
      * 添加footer
      */
-    private void initFooter() {
+    private void addFooter() {
         vFooter = LayoutInflater.from(getContext()).inflate(R.layout.footer, null);
         llytFooter = (LinearLayout) vFooter.findViewById(R.id.llytFooter);
+        pbarFooter = (ProgressBar) vFooter.findViewById(R.id.pbarFooter);
+        tvFooter = (TextView) vFooter.findViewById(R.id.tvFooter);
+        tvFooter.setText("正在加载...");
         this.addFooterView(vFooter);
     }
 
@@ -70,11 +80,19 @@ public class LoadListView extends ListView implements AbsListView.OnScrollListen
     }
 
     /**
-     * 加载完成
+     * 全部数据加载完成
      */
-    public void loadingFinished() {
+    public void completeLoading() {
+        isCompleteLoading = true;
+        pbarFooter.setVisibility(View.GONE);
+        tvFooter.setText("没有更多内容了");
+    }
+
+    /**
+     * 完成一次loading
+     */
+    public void finishOneLoading(){
         isLoading = false;
-        hideFooter();
     }
 
     @Override
@@ -82,6 +100,10 @@ public class LoadListView extends ListView implements AbsListView.OnScrollListen
 
         if (mOnLoadScrollListener != null) {
             mOnLoadScrollListener.onScrollStateChanged(view, scrollState);
+        }
+
+        if (isCompleteLoading) {
+            return;
         }
 
         //当停止滚动并且显示最后一条数据时，加载更多数据
@@ -93,7 +115,6 @@ public class LoadListView extends ListView implements AbsListView.OnScrollListen
             }
             isLoading = true;
             if (mOnLoadScrollListener != null) {
-                showFooter();
                 mOnLoadScrollListener.onLoad();
             }
         }

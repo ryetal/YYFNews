@@ -6,11 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.yyf.www.project_quicknews.R;
-import com.yyf.www.project_quicknews.adater.SearchHotAdapter;
+import com.yyf.www.project_quicknews.adapter.SearchHotAdapter;
 import com.yyf.www.project_quicknews.bean.ResultBean;
-import com.yyf.www.project_quicknews.bean.SearchKeywordBean;
+import com.yyf.www.project_quicknews.bean.event.SearchEvent;
 import com.yyf.www.project_quicknews.global.GlobalValues;
 import com.yyf.www.project_quicknews.net.ISearchHotService;
 
@@ -64,17 +65,11 @@ public class SearchHotFragment extends BaseFragment {
         return inflater.inflate(R.layout.fragment_search_hot, container, false);
     }
 
-    /**
-     * 获取View
-     */
     @Override
     protected void getViews() {
         gvSearchHot = (GridView) mRootView.findViewById(R.id.gvSearchHot);
     }
 
-    /**
-     * 初始化View
-     */
     @Override
     protected void initViews() {
 
@@ -82,9 +77,6 @@ public class SearchHotFragment extends BaseFragment {
         gvSearchHot.setAdapter(mAdapter);
     }
 
-    /**
-     * 设置Listener
-     */
     @Override
     protected void setListeners() {
 
@@ -92,16 +84,12 @@ public class SearchHotFragment extends BaseFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String keyword = (String) mAdapter.getItem(position);
-                EventBus.getDefault().post(new SearchKeywordBean(keyword));
-
+                EventBus.getDefault().post(new SearchEvent(keyword)); //发送搜索事件
             }
         });
 
     }
 
-    /**
-     * 初始化数据
-     */
     @Override
     protected void initDatas() {
 
@@ -109,8 +97,17 @@ public class SearchHotFragment extends BaseFragment {
         call.enqueue(new Callback<ResultBean<List<String>>>() {
             @Override
             public void onResponse(Call<ResultBean<List<String>>> call, Response<ResultBean<List<String>>> response) {
-                List<String> datas = response.body().data;
-                mAdapter.addDatas(datas);
+
+                ResultBean<List<String>> result = response.body();
+
+                if (result.code == ResultBean.CODE_ERROR) {
+                    Toast.makeText(getContext(), result.msg, Toast.LENGTH_SHORT).show();
+                } else if (result.code == ResultBean.CODE_DATASET_EMPTY) {
+                    Toast.makeText(getContext(), "没有热门推荐数据", Toast.LENGTH_SHORT).show();
+                } else if (result.code == ResultBean.CODE_DATASET_NOT_EMPTY) {
+                    List<String> datas = result.data;
+                    mAdapter.addDatas(datas);
+                }
             }
 
             @Override

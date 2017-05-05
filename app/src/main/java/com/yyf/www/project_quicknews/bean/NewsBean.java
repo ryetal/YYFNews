@@ -1,10 +1,12 @@
 package com.yyf.www.project_quicknews.bean;
 
+import java.io.Serializable;
+
 /**
  * Created by 子凡 on 2017/5/3.
  */
 
-public class NewsBean {
+public class NewsBean implements Serializable {
 
     private int id;
     private String url;

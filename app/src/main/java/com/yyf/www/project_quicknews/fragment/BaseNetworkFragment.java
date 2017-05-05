@@ -3,10 +3,13 @@ package com.yyf.www.project_quicknews.fragment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.yyf.www.project_quicknews.R;
 import com.yyf.www.project_quicknews.bean.ResultBean;
 import com.yyf.www.project_quicknews.type.ParameterizedTypeImpl;
+import com.yyf.www.project_quicknews.utils.NetUtils;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -81,8 +84,6 @@ public abstract class BaseNetworkFragment<T> extends BaseFragment {
         // Required empty public constructor
     }
 
-    //生命周期：begin///////////////////////////////////////////////////////////////////////////////
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -91,15 +92,22 @@ public abstract class BaseNetworkFragment<T> extends BaseFragment {
         mClient.dispatcher().cancelAll();
     }
 
-    //生命周期：end/////////////////////////////////////////////////////////////////////////////////
-
     /**
      * 从服务器上获取数据
+     *
+     * @param url
+     * @return 是否执行网络请求
      */
-    protected void doRequest(String url) {
+    protected boolean doRequest(String url) {
+
+        //判断网络是否可用
+        if (!NetUtils.isNetworkConnected(getContext())) {
+            Toast.makeText(getContext(), getString(R.string.no_net), Toast.LENGTH_SHORT).show();
+            return false;
+        }
 
         if (isRequesting) {
-            return;
+            return false;
         }
 
         isRequesting = true;
@@ -148,6 +156,8 @@ public abstract class BaseNetworkFragment<T> extends BaseFragment {
 
             }
         });
+
+        return true;
 
     }
 

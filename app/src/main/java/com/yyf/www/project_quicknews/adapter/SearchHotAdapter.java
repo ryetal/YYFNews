@@ -1,4 +1,4 @@
-package com.yyf.www.project_quicknews.adater;
+package com.yyf.www.project_quicknews.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -16,21 +16,23 @@ import java.util.List;
  * Created by 子凡 on 2017/4/6.
  */
 
-public class SearchHistoryAdapter extends BaseAdapter {
+public class SearchHotAdapter extends BaseAdapter {
 
     private Context mContext;
     private LayoutInflater mInflater;
     private List<String> mDatas;
+    private int mItemCount;
 
-    public SearchHistoryAdapter(Context context) {
+    public SearchHotAdapter(Context context, int itemCount) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
         mDatas = new ArrayList<>();
+        mItemCount = itemCount;
     }
 
     @Override
     public int getCount() {
-        return mDatas == null ? 0 : mDatas.size();
+        return mDatas == null ? 0 : Math.min(mDatas.size(), mItemCount);
     }
 
     @Override
@@ -47,22 +49,22 @@ public class SearchHistoryAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         ViewHolder holder;
-        String history = (String) getItem(position);
+        String title = (String) getItem(position);
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.listitem_seach_history, null);
+            convertView = mInflater.inflate(R.layout.listitem_seach_hot, null);
             holder = new ViewHolder();
-            holder.tvHistory = (TextView) convertView.findViewById(R.id.tvSearchHistory);
+            holder.tvTitle = (TextView) convertView.findViewById(R.id.tvSearchHot);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.tvHistory.setText(history);
+        holder.tvTitle.setText(title);
 
         return convertView;
     }
 
     private final class ViewHolder {
-        TextView tvHistory;
+        TextView tvTitle;
     }
 
     public void addDatas(List<String> datas) {
@@ -74,14 +76,5 @@ public class SearchHistoryAdapter extends BaseAdapter {
         mDatas.clear();
         mDatas.addAll(datas);
         notifyDataSetChanged();
-    }
-
-    public void addData(String data) {
-        mDatas.add(data);
-        notifyDataSetChanged();
-    }
-
-    public List<String> getDatas() {
-        return mDatas;
     }
 }

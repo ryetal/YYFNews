@@ -8,8 +8,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.yyf.www.project_quicknews.R;
-import com.yyf.www.project_quicknews.adater.SearchListAdapter;
-import com.yyf.www.project_quicknews.bean.SearchKeywordBean;
+import com.yyf.www.project_quicknews.adapter.SearchListAdapter;
+import com.yyf.www.project_quicknews.bean.event.SearchEvent;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -64,7 +64,7 @@ public class SearchListFragment extends BaseFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String keyword = (String) mAdapter.getItem(position);
-                EventBus.getDefault().post(new SearchKeywordBean(keyword));
+                EventBus.getDefault().post(new SearchEvent(keyword));
 
             }
         });

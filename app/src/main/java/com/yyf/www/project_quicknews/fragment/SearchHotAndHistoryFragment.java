@@ -35,59 +35,19 @@ public class SearchHotAndHistoryFragment extends BaseFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-        return super.onCreateView(inflater, container, savedInstanceState);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
-
-    //生命周期:end//////////////////////////////////////////////////////////////////////////////////
-
-    @Override
     protected View inflateRootView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_search_hot_and_history, container, false);
     }
 
-    /**
-     * 获取View
-     */
-    @Override
-    protected void getViews() {
 
-    }
-
-    /**
-     * 初始化View
-     */
     @Override
     protected void initViews() {
+        super.initViews();
 
         FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.flytSearchHotContainer, mSearchHotFragment, "tag1");
         fragmentTransaction.add(R.id.flytSearchHistoryContainer, mSearchHistoryFragment, "tag2");
         fragmentTransaction.commit();
-
-    }
-
-    /**
-     * 设置Listener
-     */
-    @Override
-    protected void setListeners() {
-
-    }
-
-    /**
-     * 初始化数据
-     */
-    @Override
-    protected void initDatas() {
-
     }
 
 }

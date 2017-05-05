@@ -14,8 +14,9 @@ import android.widget.Toast;
 
 import com.yyf.www.project_quicknews.R;
 import com.yyf.www.project_quicknews.activity.NewsDetailActivity;
-import com.yyf.www.project_quicknews.adater.HomeChildAdapter;
+import com.yyf.www.project_quicknews.adapter.HomeChildAdapter;
 import com.yyf.www.project_quicknews.bean.NewsBean;
+import com.yyf.www.project_quicknews.bean.ResultBean;
 import com.yyf.www.project_quicknews.global.GlobalValues;
 import com.yyf.www.project_quicknews.view.LoadListView;
 
@@ -23,10 +24,7 @@ import java.util.List;
 
 public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
 
-    private static final int SIZE = 20;
-
-    private String mBaseURL;
-    private String mURL;
+    private static final int SIZE = 20;  //每次加载20条数据
 
     //Child Type
     public enum ChildType {
@@ -40,8 +38,8 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
     private TextView tvEmptyView;
 
     private ChildType mChildType;
+    private String mURL;
     private HomeChildAdapter mAdapter;
-
     private boolean mCleared;
 
     public HomeChildFragment() {
@@ -71,53 +69,53 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
             case Recommend:
                 mClazz = NewsBean.class;
                 mIsDataset = true;
-                mBaseURL = GlobalValues.URL_NEWS + "&type=0";
+                mURL = GlobalValues.BASE_URL + "servlet/NewsServlet?action=getNews&type=0";
                 index = 0;
                 break;
             case Hot:
                 mClazz = NewsBean.class;
                 mIsDataset = true;
-                mBaseURL = GlobalValues.URL_NEWS + "&type=1";
+                mURL = GlobalValues.BASE_URL + "servlet/NewsServlet?action=getNews&type=1";
                 index = 1;
                 break;
             case Video:
                 mClazz = NewsBean.class;
                 mIsDataset = true;
-                mBaseURL = GlobalValues.URL_NEWS + "&type=2";
+                mURL = GlobalValues.BASE_URL + "servlet/NewsServlet?action=getNews&type=2";
                 index = 2;
                 break;
             case Society:
                 mClazz = NewsBean.class;
                 mIsDataset = true;
-                mBaseURL = GlobalValues.URL_NEWS + "&type=3";
+                mURL = GlobalValues.BASE_URL + "servlet/NewsServlet?action=getNews&type=3";
                 index = 3;
                 break;
             case Episode:
                 mClazz = NewsBean.class;
                 mIsDataset = true;
-                mBaseURL = GlobalValues.URL_NEWS + "&type=4";
+                mURL = GlobalValues.BASE_URL + "servlet/NewsServlet?action=getNews&type=4";
                 index = 4;
                 break;
             case Picture:
                 mClazz = NewsBean.class;
                 mIsDataset = true;
-                mBaseURL = GlobalValues.URL_NEWS + "&type=5";
+                mURL = GlobalValues.BASE_URL + "servlet/NewsServlet?action=getNews&type=5";
                 index = 5;
                 break;
             case Entertainment:
                 mClazz = NewsBean.class;
                 mIsDataset = true;
-                mBaseURL = GlobalValues.URL_NEWS + "&type=6";
+                mURL = GlobalValues.BASE_URL + "servlet/NewsServlet?action=getNews&type=6";
                 index = 6;
                 break;
             case Technology:
                 mClazz = NewsBean.class;
                 mIsDataset = true;
-                mBaseURL = GlobalValues.URL_NEWS + "&type=7";
+                mURL = GlobalValues.BASE_URL + "servlet/NewsServlet?action=getNews&type=7";
                 index = 7;
                 break;
         }
-        mURL = mBaseURL + "&offset=%d&size=" + SIZE;
+        mURL = mURL + "&offset=%d&size=" + SIZE;
     }
 
     @Override
@@ -126,9 +124,6 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
         return inflater.inflate(R.layout.fragment_home_child, container, false);
     }
 
-    /**
-     * 获取View
-     */
     @Override
     protected void getViews() {
         super.getViews();
@@ -139,12 +134,11 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
         tvEmptyView = (TextView) mRootView.findViewById(R.id.tvEmptyView);
     }
 
-    /**
-     * 初始化View
-     */
     @Override
     protected void initViews() {
         super.initViews();
+
+        tvEmptyView.setText(getString(R.string.empty));
 
         //初始化ListView
         mAdapter = new HomeChildAdapter(getContext());
@@ -154,9 +148,6 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
         srlytHomeChild.setRefreshing(false);
     }
 
-    /**
-     * 设置Listener
-     */
     @Override
     protected void setListeners() {
         super.setListeners();
@@ -166,8 +157,11 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
             @Override
             public void onRefresh() {
 
-                mCleared = true;
-                doRequest(String.format(mURL, 0));
+                if (doRequest(String.format(mURL, 0))) {
+                    mCleared = true;
+                } else {
+                    resetViews();
+                }
             }
         });
 
@@ -176,8 +170,11 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
             @Override
             public void onLoad() {
 
-                mCleared = false;
-                doRequest(String.format(mURL, mAdapter.getCount()));
+                if (doRequest(String.format(mURL, mAdapter.getCount()))) {
+                    mCleared = false;
+                } else {
+                    resetViews();
+                }
             }
 
             @Override
@@ -205,8 +202,7 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
                 Intent intent = new Intent(getContext(), NewsDetailActivity.class);
                 Bundle bundle = new Bundle();
                 NewsBean news = (NewsBean) mAdapter.getItem(position);
-                bundle.putInt("newsId",news.getId());
-                bundle.putString("newsDetailURL", news.getUrl());
+                bundle.putSerializable("news", news);
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
@@ -218,50 +214,64 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
     protected void initDatas() {
         super.initDatas();
 
-        doRequest(String.format(mURL, 0));
+        if (doRequest(String.format(mURL, 0))) {
+            mCleared = true;
+        } else {
+            resetViews();
+        }
     }
 
     @Override
     void doBeforeOneRequest() {
-        tvEmptyView.setText("正在加载...");
+        tvEmptyView.setText(getResources().getString(R.string.loading));
     }
 
     @Override
     void doWhenGetDatasFromServerSuccess() {
 
-        reInitViews();
+        resetViews();
 
-        List<NewsBean> datas = (List<NewsBean>) mResult.data;
-        if (datas.size() == 0) {
-            if (this.getUserVisibleHint()) {
-                Toast.makeText(getContext(), "没有数据了", Toast.LENGTH_SHORT).show();
-            }
+        if (mResult.code == ResultBean.CODE_ERROR) {
+            Toast.makeText(getContext(), mResult.msg, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (mCleared) {
-            mAdapter.resetDatas(datas);
-        } else {
-            mAdapter.addDatas(datas);
+        if (mResult.code == ResultBean.CODE_DATASET_EMPTY) {
+            lvHomeChild.completeLoading();
+            return;
+        }
+
+        if (mResult.code == ResultBean.CODE_DATASET_NOT_EMPTY) {
+            List<NewsBean> datas = (List<NewsBean>) mResult.data;
+            if (datas.size() < SIZE) {
+                lvHomeChild.completeLoading();
+            }
+            if (mCleared) {
+                mAdapter.resetDatas(datas);
+            } else {
+                mAdapter.addDatas(datas);
+            }
         }
 
     }
 
     @Override
     void doWhenGetDatasFromServerFailed() {
-        reInitViews();
+        resetViews();
     }
 
     @Override
     void doWhenRequestFailed() {
-        reInitViews();
+        resetViews();
     }
 
-    private void reInitViews() {
-
-        lvHomeChild.loadingFinished();
+    /**
+     * 重置 View
+     */
+    private void resetViews() {
+        lvHomeChild.finishOneLoading();
         srlytHomeChild.setRefreshing(false);
-        tvEmptyView.setText("没有数据");
+        tvEmptyView.setText(getString(R.string.empty));
     }
 
 }

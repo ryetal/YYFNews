@@ -25,6 +25,30 @@
         <activity android:name=".activity.NewsDetailActivity" />
         <activity android:name=".activity.SearchActivity" />
         <activity android:name=".activity.SearchResultActivity" />
+
+        <!--登录-->
+        <activity
+            android:name=".activity.login.LoginActivity"
+            android:launchMode="singleTask" />
+
+        <!--注册-->
+        <activity android:name=".activity.register.RegisterActivity" />
+
+        <activity android:name=".activity.register.AgreementActivity" />
+
+        <!--找回密码-->
+        <activity android:name=".activity.login.FindPwdStepOneActivity" />
+
+        <activity android:name=".activity.login.FindPwdStepTwoActivity" />
+
+
+        <receiver android:name=".receiver.NetWorkStatusReceiver" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+
     </application>
 
 </manifest>

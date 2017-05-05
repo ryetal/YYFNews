@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.yyf.www.project_quicknews.R;
-import com.yyf.www.project_quicknews.adater.VideoAdapter;
+import com.yyf.www.project_quicknews.adapter.VideoAdapter;
 
 public class VideoFragment extends Fragment {
 

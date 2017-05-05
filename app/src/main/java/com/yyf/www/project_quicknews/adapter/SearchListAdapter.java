@@ -1,4 +1,4 @@
-package com.yyf.www.project_quicknews.adater;
+package com.yyf.www.project_quicknews.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -16,23 +16,21 @@ import java.util.List;
  * Created by 子凡 on 2017/4/6.
  */
 
-public class SearchHotAdapter extends BaseAdapter {
+public class SearchListAdapter extends BaseAdapter {
 
     private Context mContext;
     private LayoutInflater mInflater;
     private List<String> mDatas;
-    private int mItemCount;
 
-    public SearchHotAdapter(Context context, int itemCount) {
+    public SearchListAdapter(Context context) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
         mDatas = new ArrayList<>();
-        mItemCount = itemCount;
     }
 
     @Override
     public int getCount() {
-        return mDatas == null ? 0 : Math.min(mDatas.size(), mItemCount);
+        return mDatas == null ? 0 : mDatas.size();
     }
 
     @Override
@@ -49,22 +47,22 @@ public class SearchHotAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         ViewHolder holder;
-        String title = (String) getItem(position);
+        String history = (String) getItem(position);
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.listitem_seach_hot, null);
+            convertView = mInflater.inflate(R.layout.listitem_seach_list, null);
             holder = new ViewHolder();
-            holder.tvTitle = (TextView) convertView.findViewById(R.id.tvSearchHot);
+            holder.tvSearchList = (TextView) convertView.findViewById(R.id.tvSearchList);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.tvTitle.setText(title);
+        holder.tvSearchList.setText(history);
 
         return convertView;
     }
 
     private final class ViewHolder {
-        TextView tvTitle;
+        TextView tvSearchList;
     }
 
     public void addDatas(List<String> datas) {

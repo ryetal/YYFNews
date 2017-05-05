@@ -4,23 +4,84 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+
     tools:context="com.yyf.www.project_quicknews.fragment.HomeFragment">
 
-    <android.support.design.widget.TabLayout
-        android:id="@+id/tlytVideo"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/tbarMine"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_169"
-        app:tabBackground="@color/colorAccent"
-        app:tabIndicatorColor="@android:color/holo_red_dark"
-        app:tabIndicatorHeight="5dp"
-        app:tabSelectedTextColor="@color/colorGray"
-        app:tabTextAppearance="@style/TabLayoutTextStyle"
-        app:tabTextColor="@android:color/white" />
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:minHeight="?actionBarSize" />
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/vpVideo"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_height="@dimen/dimen_500"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/ivProfilePhoto"
+            android:layout_width="@dimen/dimen_250"
+            android:layout_height="@dimen/dimen_250"
+            android:src="@mipmap/ic_launcher" />
+
+        <TextView
+            android:id="@+id/tvUserName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_20"
+            android:text="@string/click_to_login"
+            android:textSize="@dimen/dimen_40sp" />
+
+    </LinearLayout>
+
+    <!--关注-->
+    <LinearLayout
+        android:id="@+id/llytCare"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_150"
+        android:background="@drawable/selector_round_rect"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="@dimen/dimen_20">
+
+        <ImageView
+            android:layout_width="@dimen/dimen_120"
+            android:layout_height="@dimen/dimen_120"
+            android:src="@drawable/care_press" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="关注"
+            android:textSize="@dimen/dimen_60sp" />
+
+    </LinearLayout>
+
+    <!--设置-->
+    <LinearLayout
+        android:id="@+id/llytSet"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_150"
+        android:layout_marginTop="@dimen/dimen_20"
+        android:background="@drawable/selector_round_rect"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="@dimen/dimen_20">
+
+        <ImageView
+            android:layout_width="@dimen/dimen_120"
+            android:layout_height="@dimen/dimen_120"
+            android:src="@drawable/home_press" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="设置"
+            android:textSize="@dimen/dimen_60sp" />
+
+    </LinearLayout>
+
 
 </LinearLayout>

@@ -30,7 +30,7 @@
                     android:id="@+id/tvEmptyView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="正在加载..."
+                    android:text="@string/loading"
                     android:textSize="@dimen/dimen_102sp" />
 
             </LinearLayout>

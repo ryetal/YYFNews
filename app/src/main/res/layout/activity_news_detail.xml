@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_news"
     android:layout_width="match_parent"
@@ -10,8 +11,10 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/tbarNews"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_150"
-        android:background="@color/colorAccent" />
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        app:navigationIcon="@drawable/back" />
 
     <ProgressBar
         android:id="@+id/pbarNews"
@@ -19,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="3dp"
         android:max="100"
-        android:progressTint="@android:color/holo_red_dark" />
+        android:progressTint="@color/colorPrimaryDark" />
 
     <com.yyf.www.project_quicknews.view.BottomScrollView
         android:id="@+id/scrollView"
@@ -40,7 +43,7 @@
                 android:id="@+id/flytCommentContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
         </LinearLayout>
     </com.yyf.www.project_quicknews.view.BottomScrollView>

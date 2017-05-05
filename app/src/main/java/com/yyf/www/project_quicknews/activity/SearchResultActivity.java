@@ -1,18 +1,17 @@
 package com.yyf.www.project_quicknews.activity;
 
 import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.ImageView;
 
 import com.yyf.www.project_quicknews.R;
 import com.yyf.www.project_quicknews.fragment.SearchResultFragment;
 
 public class SearchResultActivity extends BaseActivity {
 
+    private Toolbar tbarSearchResult;
     private FragmentManager mFragmentManager;
     private SearchResultFragment mSearchResultFragment;
-
-    private ImageView ivBack;
 
     @Override
     protected int getContentViewId() {
@@ -28,29 +27,24 @@ public class SearchResultActivity extends BaseActivity {
         mSearchResultFragment = SearchResultFragment.newInstance(keyword);
     }
 
-    /**
-     * 获取View
-     */
     protected void getViews() {
-        ivBack = (ImageView) findViewById(R.id.ivBack);
+        super.getViews();
+
+        tbarSearchResult = (Toolbar) findViewById(R.id.tbarSearchResult);
     }
 
-    /**
-     * 初始化View
-     */
     protected void initViews() {
+        super.initViews();
 
         mFragmentManager.beginTransaction()
                 .add(R.id.flytContainer, mSearchResultFragment, "tag")
                 .commit();
     }
 
-    /**
-     * 设置Listener
-     */
     protected void setListeners() {
+        super.setListeners();
 
-        ivBack.setOnClickListener(new View.OnClickListener() {
+        tbarSearchResult.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
@@ -58,13 +52,5 @@ public class SearchResultActivity extends BaseActivity {
         });
 
     }
-
-    /**
-     * 初始化数据
-     */
-    protected void initDatas() {
-
-    }
-
 
 }

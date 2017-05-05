@@ -1,4 +1,4 @@
-package com.yyf.www.project_quicknews.adater;
+package com.yyf.www.project_quicknews.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;

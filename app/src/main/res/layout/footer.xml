@@ -14,13 +14,19 @@
         android:orientation="horizontal">
 
         <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
+            android:id="@+id/pbarFooter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="加载..." />
+            android:indeterminateTint="@color/colorPrimary"
+            android:indeterminateTintMode="src_atop" />
+
+        <TextView
+            android:id="@+id/tvFooter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dimen_15"
+            android:text="加载..."
+            android:textSize="@dimen/dimen_50sp" />
     </LinearLayout>
 
 </LinearLayout>

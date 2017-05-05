@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.yyf.www.project_quicknews.R;
-import com.yyf.www.project_quicknews.adater.CommentAdapter;
+import com.yyf.www.project_quicknews.adapter.CommentAdapter;
 import com.yyf.www.project_quicknews.bean.CommentBean;
 import com.yyf.www.project_quicknews.bean.ResultBean;
 import com.yyf.www.project_quicknews.global.GlobalValues;
@@ -29,6 +29,7 @@ public class CommentFragment extends BaseFragment {
     private ListViewInScrollView lvComments;
     private CommentAdapter mAdapter;
     private boolean isLoading;
+    private boolean isCompleteLoading;
     private int mNewsId;
 
     private ICommentService mCommentService;
@@ -66,38 +67,16 @@ public class CommentFragment extends BaseFragment {
         return inflater.inflate(R.layout.fragment_comment, container, false);
     }
 
-    /**
-     * 获取View
-     */
     @Override
     protected void getViews() {
         lvComments = (ListViewInScrollView) mRootView.findViewById(R.id.lvComments);
     }
 
-    /**
-     * 初始化View
-     */
     @Override
     protected void initViews() {
 
         mAdapter = new CommentAdapter(getContext());
         lvComments.setAdapter(mAdapter);
-    }
-
-    /**
-     * 设置Listener
-     */
-    @Override
-    protected void setListeners() {
-
-    }
-
-    /**
-     * 初始化数据
-     */
-    @Override
-    protected void initDatas() {
-
     }
 
     public boolean isLoading() {
@@ -106,30 +85,43 @@ public class CommentFragment extends BaseFragment {
 
     public void startLoading() {
         this.isLoading = true;
-        lvComments.showFooter();
-        requestComments(mAdapter.getCount());
+        doRequest(mAdapter.getCount());
     }
 
-    /**
-     * 发起网络请求
-     */
-    private void requestComments(int offset) {
+    public boolean isCompleteLoading() {
+        return isCompleteLoading;
+    }
+
+    private void doRequest(int offset) {
 
         Call<ResultBean<List<CommentBean>>> call = mCommentService.getComments("getComments", mNewsId, offset, SIZE);
         call.enqueue(new Callback<ResultBean<List<CommentBean>>>() {
             @Override
             public void onResponse(Call<ResultBean<List<CommentBean>>> call, Response<ResultBean<List<CommentBean>>> response) {
 
-                List<CommentBean> datas = response.body().data;
+                isLoading = false;
+                ResultBean<List<CommentBean>> result = response.body();
 
-                if (datas.size() == 0) {
-                    Toast.makeText(getContext(), "没有评论了", Toast.LENGTH_SHORT).show();
+                if (result.code == ResultBean.CODE_ERROR) {
+                    Toast.makeText(getContext(), result.msg, Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                mAdapter.addDatas(datas);
-                lvComments.hideFooter();
-                isLoading = false;
+                if (result.code == ResultBean.CODE_DATASET_EMPTY) {
+                    isCompleteLoading = true;
+                    lvComments.completeLoading();
+                    return;
+                }
+
+                if (result.code == ResultBean.CODE_DATASET_NOT_EMPTY) {
+                    List<CommentBean> datas = result.data;
+                    if (datas.size() < SIZE) {
+                        isCompleteLoading = true;
+                        lvComments.completeLoading();
+                    }
+                    mAdapter.addDatas(datas);
+                }
+
             }
 
             @Override

@@ -1,51 +1,62 @@
 package com.yyf.www.project_quicknews.bean;
 
-public class UserBean {
+import java.io.Serializable;
 
-	private int id;
-	private String userName;
-	private String password;
-	private String profilePhotoURL; // 头像
-	private String description; // 描述
+public class UserBean implements Serializable {
 
-	public int getId() {
-		return id;
-	}
+    private int id;
+    private String userName;
+    private String password;
+    private String profilePhotoURL; // 头像
+    private String description; // 描述
+    private String telephone;
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public String getTelephone() {
+        return telephone;
+    }
 
-	public String getUserName() {
-		return userName;
-	}
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public String getProfilePhotoURL() {
-		return profilePhotoURL;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public void setProfilePhotoURL(String profilePhotoURL) {
-		this.profilePhotoURL = profilePhotoURL;
-	}
+    public String getUserName() {
+        return userName;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getProfilePhotoURL() {
+        return profilePhotoURL;
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    public void setProfilePhotoURL(String profilePhotoURL) {
+        this.profilePhotoURL = profilePhotoURL;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
 }

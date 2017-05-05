@@ -1,4 +1,4 @@
-package com.yyf.www.project_quicknews.adater;
+package com.yyf.www.project_quicknews.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -16,13 +16,13 @@ import java.util.List;
  * Created by 子凡 on 2017/4/6.
  */
 
-public class SearchListAdapter extends BaseAdapter {
+public class SearchHistoryAdapter extends BaseAdapter {
 
     private Context mContext;
     private LayoutInflater mInflater;
     private List<String> mDatas;
 
-    public SearchListAdapter(Context context) {
+    public SearchHistoryAdapter(Context context) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
         mDatas = new ArrayList<>();
@@ -49,20 +49,20 @@ public class SearchListAdapter extends BaseAdapter {
         ViewHolder holder;
         String history = (String) getItem(position);
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.listitem_seach_list, null);
+            convertView = mInflater.inflate(R.layout.listitem_seach_history, null);
             holder = new ViewHolder();
-            holder.tvSearchList = (TextView) convertView.findViewById(R.id.tvSearchList);
+            holder.tvHistory = (TextView) convertView.findViewById(R.id.tvSearchHistory);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.tvSearchList.setText(history);
+        holder.tvHistory.setText(history);
 
         return convertView;
     }
 
     private final class ViewHolder {
-        TextView tvSearchList;
+        TextView tvHistory;
     }
 
     public void addDatas(List<String> datas) {
@@ -74,5 +74,14 @@ public class SearchListAdapter extends BaseAdapter {
         mDatas.clear();
         mDatas.addAll(datas);
         notifyDataSetChanged();
+    }
+
+    public void addData(String data) {
+        mDatas.add(data);
+        notifyDataSetChanged();
+    }
+
+    public List<String> getDatas() {
+        return mDatas;
     }
 }

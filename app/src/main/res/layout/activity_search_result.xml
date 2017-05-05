@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_search"
     android:layout_width="match_parent"
@@ -8,19 +9,13 @@
     android:orientation="vertical"
     tools:context="com.yyf.www.project_quicknews.activity.SearchActivity">
 
-    <LinearLayout
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/tbarSearchResult"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_152"
-        android:background="@color/colorAccent"
-        android:gravity="center_vertical"
-        android:padding="5dp">
-
-        <ImageView
-            android:id="@+id/ivBack"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/back" />
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:minHeight="?actionBarSize"
+        app:navigationIcon="@drawable/back" />
 
     <FrameLayout
         android:id="@+id/flytContainer"

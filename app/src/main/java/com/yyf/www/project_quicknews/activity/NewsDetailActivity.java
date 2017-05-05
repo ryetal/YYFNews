@@ -1,6 +1,5 @@
 package com.yyf.www.project_quicknews.activity;
 
-import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -12,6 +11,7 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import com.yyf.www.project_quicknews.R;
+import com.yyf.www.project_quicknews.bean.NewsBean;
 import com.yyf.www.project_quicknews.fragment.CommentFragment;
 import com.yyf.www.project_quicknews.view.BottomScrollView;
 
@@ -23,16 +23,10 @@ public class NewsDetailActivity extends BaseActivity {
     private WebView wvNews;
     private FrameLayout flytCommentContainer;
 
-    private int mNewsId;
-    private String mNewsDetailURL;
+    private NewsBean mNews;
 
     private FragmentManager mFragmentManager;
     private CommentFragment mCommentFragment;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     protected void onResume() {
@@ -64,14 +58,9 @@ public class NewsDetailActivity extends BaseActivity {
         super.init();
 
         mFragmentManager = getSupportFragmentManager();
-
-        mNewsDetailURL = getIntent().getExtras().getString("newsDetailURL");
-        mNewsId = getIntent().getExtras().getInt("newsId");
+        mNews = (NewsBean) getIntent().getExtras().getSerializable("news");
     }
 
-    /**
-     * 获取View
-     */
     @Override
     protected void getViews() {
 
@@ -82,22 +71,14 @@ public class NewsDetailActivity extends BaseActivity {
         flytCommentContainer = (FrameLayout) findViewById(R.id.flytCommentContainer);
     }
 
-    /**
-     * 初始化View
-     */
     @Override
     protected void initViews() {
-
-        //初始化Toolbar
-        tbarNews.setNavigationIcon(R.drawable.back);
-        tbarNews.setTitle("新闻");
-        setSupportActionBar(tbarNews);
 
         //初始化WebView
         wvNews.getSettings().setJavaScriptEnabled(true);
 
         //添加comment fragment
-        mCommentFragment = CommentFragment.newInstance(mNewsId);
+        mCommentFragment = CommentFragment.newInstance(mNews.getId());
         mFragmentManager.beginTransaction().add(R.id.flytCommentContainer,
                 mCommentFragment, "tag").commit();
 
@@ -108,6 +89,7 @@ public class NewsDetailActivity extends BaseActivity {
      */
     @Override
     protected void setListeners() {
+        super.setListeners();
 
         tbarNews.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,7 +104,7 @@ public class NewsDetailActivity extends BaseActivity {
 
                 if (isBottom) {
 
-                    if (mCommentFragment.isLoading()) {
+                    if (mCommentFragment.isCompleteLoading() || mCommentFragment.isLoading()) {
                         return;
                     }
 
@@ -164,12 +146,11 @@ public class NewsDetailActivity extends BaseActivity {
 
     }
 
-    /**
-     * 初始化data
-     */
     @Override
     protected void initDatas() {
-        wvNews.loadUrl(mNewsDetailURL);
+        super.initDatas();
+
+        wvNews.loadUrl(mNews.getUrl());
     }
 
 }

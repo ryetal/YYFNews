@@ -9,9 +9,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.yyf.www.project_quicknews.R;
-import com.yyf.www.project_quicknews.adater.SearchHistoryAdapter;
-import com.yyf.www.project_quicknews.bean.SearchHistoryBean;
-import com.yyf.www.project_quicknews.bean.SearchKeywordBean;
+import com.yyf.www.project_quicknews.adapter.SearchHistoryAdapter;
+import com.yyf.www.project_quicknews.bean.event.SearchHistoryEvent;
+import com.yyf.www.project_quicknews.bean.event.SearchEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -56,17 +56,11 @@ public class SearchHistoryFragment extends BaseFragment {
         return inflater.inflate(R.layout.fragment_search_history, null, false);
     }
 
-    /**
-     * 获取View
-     */
     @Override
     protected void getViews() {
         lvSearchHistory = (ListView) mRootView.findViewById(R.id.lvSearchHistory);
     }
 
-    /**
-     * 初始化View
-     */
     @Override
     protected void initViews() {
 
@@ -74,9 +68,6 @@ public class SearchHistoryFragment extends BaseFragment {
         lvSearchHistory.setAdapter(mAdapter);
     }
 
-    /**
-     * 设置Listener
-     */
     @Override
     protected void setListeners() {
 
@@ -84,15 +75,12 @@ public class SearchHistoryFragment extends BaseFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String keyword = (String) mAdapter.getItem(position);
-                EventBus.getDefault().post(new SearchKeywordBean(keyword));
+                EventBus.getDefault().post(new SearchEvent(keyword));
             }
         });
 
     }
 
-    /**
-     * 初始化数据
-     */
     @Override
     protected void initDatas() {
 
@@ -104,7 +92,7 @@ public class SearchHistoryFragment extends BaseFragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void addHistory(SearchHistoryBean searchHistoryBean) {
+    public void onSearchHistoryEvent(SearchHistoryEvent searchHistoryBean) {
 
         String data = searchHistoryBean.history;
         if (!mAdapter.getDatas().contains(data)) {

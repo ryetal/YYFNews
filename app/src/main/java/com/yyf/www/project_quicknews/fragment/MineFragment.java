@@ -1,24 +1,41 @@
 package com.yyf.www.project_quicknews.fragment;
 
-import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.yyf.www.project_quicknews.R;
+import com.yyf.www.project_quicknews.activity.login.LoginActivity;
+import com.yyf.www.project_quicknews.bean.UserBean;
+import com.yyf.www.project_quicknews.bean.event.LoginEvent;
+import com.yyf.www.project_quicknews.global.GlobalValues;
+import com.yyf.www.project_quicknews.utils.SharedPreferencesUtil;
 
-public class MineFragment extends Fragment {
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
-    private OnFragmentInteractionListener mListener;
+public class MineFragment extends BaseFragment {
+
+    private UserBean mUser;
+
+    private Toolbar tbarMine;
+    private ImageView ivProfilePhoto;
+    private TextView tvUserName;
+    private LinearLayout llytCare;
+    private LinearLayout llytSet;
 
     public MineFragment() {
         // Required empty public constructor
     }
-
 
     public static MineFragment newInstance() {
         MineFragment fragment = new MineFragment();
@@ -26,74 +43,127 @@ public class MineFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        EventBus.getDefault().register(this);
+        mUser = readLoginSP();
     }
 
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    protected View inflateRootView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_mine, container, false);
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    protected void getViews() {
+        super.getViews();
+
+        tbarMine = (Toolbar) mRootView.findViewById(R.id.tbarMine);
+        ivProfilePhoto = (ImageView) mRootView.findViewById(R.id.ivProfilePhoto);
+        tvUserName = (TextView) mRootView.findViewById(R.id.tvUserName);
+        llytCare = (LinearLayout) mRootView.findViewById(R.id.llytCare);
+        llytSet = (LinearLayout) mRootView.findViewById(R.id.llytSet);
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    protected void initViews() {
+        super.initViews();
+
+        changeViews(mUser == null ? false : true);
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-    }
+    protected void setListeners() {
+        super.setListeners();
 
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
+        tvUserName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mUser == null) {
+                    //登录
+                    Intent intent = new Intent(getContext(), LoginActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        EventBus.getDefault().unregister(this);
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onLoginEvent(LoginEvent loginEvent) {
+
+        mUser = loginEvent.user;
+        changeViews(mUser == null ? false : true);
     }
 
+    /**
+     * 根据是否登录，变换View
+     *
+     * @param isLogined 是否登录
+     */
+    private void changeViews(boolean isLogined) {
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+        String path = null;
+        if (!isLogined) {
+            Picasso.with(getContext()).load(path).placeholder(R.mipmap.ic_launcher).into(ivProfilePhoto);
+            tvUserName.setText(getString(R.string.click_to_login));
+            tbarMine.setNavigationIcon(null);
+        } else {
+            path = mUser.getProfilePhotoURL();
+            Picasso.with(getContext()).load(path).placeholder(R.mipmap.ic_launcher).into(ivProfilePhoto);
+            tvUserName.setText(mUser.getUserName());
+            tbarMine.setNavigationIcon(R.drawable.logout);
+            tbarMine.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mUser = null;
+                    writeSPWhenLogout();
+                    changeViews(false);
+                }
+            });
         }
     }
 
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+    /**
+     * 从login.sp中读取登录信息
+     *
+     * @return
+     */
+    private UserBean readLoginSP() {
+
+        UserBean user = null;
+        SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(getContext(), GlobalValues.SP_LOGIN);
+
+        boolean isLogin = sharedPreferencesUtil.getBoolean("isLogined", false);
+        if (isLogin) {
+            user = new UserBean();
+            user.setId(sharedPreferencesUtil.getInt("id", -1));
+            user.setUserName(sharedPreferencesUtil.getString("userName", ""));
+            user.setPassword(sharedPreferencesUtil.getString("password", ""));
+            user.setDescription(sharedPreferencesUtil.getString("description", ""));
+            user.setProfilePhotoURL(sharedPreferencesUtil.getString("profilePohtoURL", ""));
+            user.setProfilePhotoURL(sharedPreferencesUtil.getString("telephone", ""));
+        }
+
+        return user;
     }
+
+    /**
+     * 登出后清空login.sp
+     */
+    private void writeSPWhenLogout() {
+
+        SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(getContext(), GlobalValues.SP_LOGIN);
+        sharedPreferencesUtil.clearAll();
+        sharedPreferencesUtil.putBoolean("isLogined", false);
+    }
+
 }

@@ -13,7 +13,7 @@ import com.yyf.www.project_quicknews.application.NewsApplication;
 
 public abstract class BaseFragment extends Fragment {
 
-    private boolean mIsFirstCreateView;
+    private boolean mIsFirst;
     protected View mRootView; //root view
 
     protected abstract View inflateRootView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState);
@@ -41,7 +41,7 @@ public abstract class BaseFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mIsFirstCreateView = true;
+        mIsFirst = true;
     }
 
     @Nullable
@@ -51,11 +51,11 @@ public abstract class BaseFragment extends Fragment {
 
         if (mRootView == null) {
             mRootView = inflateRootView(inflater, container, savedInstanceState);
-            mIsFirstCreateView = true;
+            mIsFirst = true;
             return mRootView;
         }
 
-        mIsFirstCreateView = false;
+        mIsFirst = false;
         ViewGroup parentView = (ViewGroup) mRootView.getParent();
         if (parentView != null) {
             parentView.removeView(mRootView);
@@ -68,7 +68,7 @@ public abstract class BaseFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (mIsFirstCreateView) {
+        if (mIsFirst) {
             getViews();
             initViews();
             setListeners();

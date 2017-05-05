@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_search"
     android:layout_width="match_parent"
@@ -7,29 +8,26 @@
     android:orientation="vertical"
     tools:context="com.yyf.www.project_quicknews.activity.SearchActivity">
 
-    <LinearLayout
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/tbarSearch"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_152"
-        android:background="@color/colorAccent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
         android:gravity="center_vertical"
-        android:padding="5dp">
-
-        <ImageView
-            android:id="@+id/ivBack"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/back" />
+        android:minHeight="?actionBarSize"
+        android:padding="5dp"
+        app:navigationIcon="@drawable/back">
 
         <com.yyf.www.project_quicknews.view.SearchEditText
             android:id="@+id/etSearch"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:imeOptions="actionSearch"
+            android:inputType="text"
             android:maxLines="1"
-            android:padding="@dimen/dimen_30"
-            android:inputType="text"/>
+            android:padding="@dimen/dimen_30" />
 
-    </LinearLayout>
+    </android.support.v7.widget.Toolbar>
 
     <FrameLayout
         android:id="@+id/flytSearchContainer"

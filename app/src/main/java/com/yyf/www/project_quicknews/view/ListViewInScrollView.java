@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.yyf.www.project_quicknews.R;
 
@@ -18,6 +20,8 @@ public class ListViewInScrollView extends ListView {
     private Context mContext;
     private View vFooter;
     private LinearLayout llytFooter;
+    private ProgressBar pbarFooter;
+    private TextView tvFooter;
 
     public ListViewInScrollView(Context context) {
         this(context, null);
@@ -31,19 +35,21 @@ public class ListViewInScrollView extends ListView {
         super(context, attrs, defStyleAttr);
 
         mContext = context;
-        init();
+        addFooter();
     }
 
     /**
-     * 初始化
+     * 添加footer
      */
-    private void init() {
+    private void addFooter() {
 
         LayoutInflater inflater = LayoutInflater.from(mContext);
         vFooter = inflater.inflate(R.layout.footer, null, false);
         llytFooter = (LinearLayout) vFooter.findViewById(R.id.llytFooter);
+        pbarFooter = (ProgressBar) vFooter.findViewById(R.id.pbarFooter);
+        tvFooter = (TextView) vFooter.findViewById(R.id.tvFooter);
+        tvFooter.setText("正在加载...");
         addFooterView(vFooter);
-        hideFooter();
     }
 
     public void showFooter() {
@@ -54,6 +60,10 @@ public class ListViewInScrollView extends ListView {
         llytFooter.setVisibility(GONE);
     }
 
+    public void completeLoading() {
+        pbarFooter.setVisibility(View.GONE);
+        tvFooter.setText("没有更多内容了");
+    }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {

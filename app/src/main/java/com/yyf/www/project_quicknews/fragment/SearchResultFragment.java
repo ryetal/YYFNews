@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.yyf.www.project_quicknews.R;
 import com.yyf.www.project_quicknews.activity.NewsDetailActivity;
-import com.yyf.www.project_quicknews.adater.SearchResultAdapter;
+import com.yyf.www.project_quicknews.adapter.SearchResultAdapter;
 import com.yyf.www.project_quicknews.bean.NewsBean;
 import com.yyf.www.project_quicknews.bean.ResultBean;
 import com.yyf.www.project_quicknews.global.GlobalValues;
@@ -75,34 +75,29 @@ public class SearchResultFragment extends BaseFragment {
         return inflater.inflate(R.layout.fragment_search_result, container, false);
     }
 
-    /**
-     * 获取View
-     */
     @Override
     protected void getViews() {
+        super.getViews();
+
         lvSearchResult = (ListView) mRootView.findViewById(R.id.lvSearchResult);
         llytEmptyView = (LinearLayout) mRootView.findViewById(R.id.llytEmptyView);
         tvEmptyView = (TextView) mRootView.findViewById(R.id.tvEmptyView);
     }
 
-    /**
-     * 初始化View
-     */
     @Override
     protected void initViews() {
+        super.initViews();
 
         //初始化ListView
         mAdapter = new SearchResultAdapter(getContext(), mKeyword);
         lvSearchResult.setAdapter(mAdapter);
         lvSearchResult.setEmptyView(llytEmptyView);
-        tvEmptyView.setText("正在加载...");
+        tvEmptyView.setText(getString(R.string.loading));
     }
 
-    /**
-     * 设置Listener
-     */
     @Override
     protected void setListeners() {
+        super.setListeners();
 
         lvSearchResult.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -110,8 +105,7 @@ public class SearchResultFragment extends BaseFragment {
                 Intent intent = new Intent(getContext(), NewsDetailActivity.class);
                 Bundle bundle = new Bundle();
                 NewsBean news = (NewsBean) mAdapter.getItem(position);
-                bundle.putString("newsDetailURL", news.getUrl());
-                bundle.putInt("newsId", news.getId());
+                bundle.putSerializable("news", news);
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
@@ -119,25 +113,26 @@ public class SearchResultFragment extends BaseFragment {
 
     }
 
-    /**
-     * 初始化数据
-     */
     @Override
     protected void initDatas() {
+        super.initDatas();
 
         Call<ResultBean<List<NewsBean>>> call = mNewsService.getNews("getNewsByKeyword", mKeyword);
         call.enqueue(new Callback<ResultBean<List<NewsBean>>>() {
             @Override
             public void onResponse(Call<ResultBean<List<NewsBean>>> call, Response<ResultBean<List<NewsBean>>> response) {
-                List<NewsBean> datas = response.body().data;
 
-                if (datas.size() == 0) {
-                    Toast.makeText(getContext(), "没有数据", Toast.LENGTH_SHORT).show();
-                    tvEmptyView.setText("没有数据");
-                    return;
+                ResultBean<List<NewsBean>> result = response.body();
+
+                if (result.code == ResultBean.CODE_ERROR) {
+                    Toast.makeText(getContext(), result.msg, Toast.LENGTH_SHORT).show();
+                } else if (result.code == ResultBean.CODE_DATASET_EMPTY) {
+                    Toast.makeText(getContext(), getString(R.string.no_data), Toast.LENGTH_SHORT).show();
+                    tvEmptyView.setText(getString(R.string.empty));
+                } else if (result.code == ResultBean.CODE_DATASET_NOT_EMPTY) {
+                    mAdapter.resetDatas(result.data);
                 }
 
-                mAdapter.resetDatas(datas);
             }
 
             @Override
