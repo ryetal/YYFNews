@@ -81,19 +81,19 @@ public class CommentAdapter extends BaseAdapter {
         holder.btnUpvote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(mContext, "赞", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext.getApplicationContext(), "赞", Toast.LENGTH_SHORT).show();
             }
         });
         holder.btnComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(mContext, "评论", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext.getApplicationContext(), "评论", Toast.LENGTH_SHORT).show();
             }
         });
         holder.btnMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(mContext, "更多", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext.getApplicationContext(), "更多", Toast.LENGTH_SHORT).show();
             }
         });
 

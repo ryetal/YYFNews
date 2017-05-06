@@ -103,7 +103,7 @@ public class CommentFragment extends BaseFragment {
                 ResultBean<List<CommentBean>> result = response.body();
 
                 if (result.code == ResultBean.CODE_ERROR) {
-                    Toast.makeText(getContext(), result.msg, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext().getApplicationContext(), result.msg, Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -126,7 +126,7 @@ public class CommentFragment extends BaseFragment {
 
             @Override
             public void onFailure(Call<ResultBean<List<CommentBean>>> call, Throwable t) {
-                Toast.makeText(getContext(), "请求失败" + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext().getApplicationContext(), "请求失败" + t.getMessage(), Toast.LENGTH_SHORT).show();
                 lvComments.hideFooter();
                 isLoading = false;
             }

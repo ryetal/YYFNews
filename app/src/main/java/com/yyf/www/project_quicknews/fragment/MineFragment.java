@@ -149,8 +149,8 @@ public class MineFragment extends BaseFragment {
             user.setUserName(sharedPreferencesUtil.getString("userName", ""));
             user.setPassword(sharedPreferencesUtil.getString("password", ""));
             user.setDescription(sharedPreferencesUtil.getString("description", ""));
-            user.setProfilePhotoURL(sharedPreferencesUtil.getString("profilePohtoURL", ""));
-            user.setProfilePhotoURL(sharedPreferencesUtil.getString("telephone", ""));
+            user.setProfilePhotoURL(sharedPreferencesUtil.getString("profilePhotoURL", ""));
+            user.setTelephone(sharedPreferencesUtil.getString("telephone", ""));
         }
 
         return user;

@@ -114,12 +114,12 @@ public class LoginActivity extends BaseActivity {
         String password = etPassword.getText().toString();
 
         if (userName.equals("")) {
-            Toast.makeText(mContext, "请输入用户名/手机号", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "请输入用户名/手机号", Toast.LENGTH_LONG).show();
             return false;
         }
 
         if (!PatternUtil.isPwdCorrect(password)) {
-            Toast.makeText(mContext, "密码格式错误", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "密码格式错误", Toast.LENGTH_LONG).show();
             return false;
         }
 
@@ -143,12 +143,12 @@ public class LoginActivity extends BaseActivity {
                 ResultBean<UserBean> result = response.body();
 
                 if (result.code == ResultBean.CODE_ERROR) {
-                    Toast.makeText(mContext, result.msg, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), result.msg, Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 if (result.code == ResultBean.CODE_SINGLE_NOT_HAVE) {
-                    Toast.makeText(mContext, "用户名或密码错误，登录失败", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "用户名或密码错误，登录失败", Toast.LENGTH_SHORT).show();
                     return;
                 }
 

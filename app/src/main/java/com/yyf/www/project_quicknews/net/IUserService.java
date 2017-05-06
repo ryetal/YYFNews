@@ -20,4 +20,10 @@ public interface IUserService {
                                      @Field("userName") String userName,
                                      @Field("password") String password);
 
+    @FormUrlEncoded
+    @POST("servlet/UserServlet")
+    Call<ResultBean<Integer>> resetPassword(@Field("action") String action,
+                                            @Field("telephone") String telephone,
+                                            @Field("newPassword") String newPassword);
+
 }

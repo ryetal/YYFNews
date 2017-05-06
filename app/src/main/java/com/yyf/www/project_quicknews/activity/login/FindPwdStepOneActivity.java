@@ -1,31 +1,26 @@
 package com.yyf.www.project_quicknews.activity.login;
 
-import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.yyf.www.project_quicknews.R;
+import com.yyf.www.project_quicknews.activity.BaseVerifyActivity;
 import com.yyf.www.project_quicknews.utils.PatternUtil;
 
-public class FindPwdStepOneActivity extends AppCompatActivity {
+import cn.smssdk.SMSSDK;
 
-    private Context mContext = this;
+public class FindPwdStepOneActivity extends BaseVerifyActivity {
 
     private Toolbar tbarFindPwdStepOne;
     private EditText etPhoneNumber;
     private EditText etVerificationCode;
     private Button btnSendVerificationCode;
     private Button btnNextStep;
-
 
     //倒计时
     private CountDownTimer mCountDownTimer = new CountDownTimer(60000, 1000) {
@@ -43,24 +38,14 @@ public class FindPwdStepOneActivity extends AppCompatActivity {
     };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_find_pwd_step_one);
-
-        getViews();
-        initViews();
-        setListeners();
-
+    protected int getContentViewId() {
+        return R.layout.activity_find_pwd_step_one;
     }
 
+    @Override
+    protected void getViews() {
+        super.getViews();
 
-    /**
-     * 获取View
-     */
-    private void getViews() {
         etPhoneNumber = (EditText) this.findViewById(R.id.etUserName);
         etVerificationCode = (EditText) this.findViewById(R.id.etVerificationCode);
         tbarFindPwdStepOne = (Toolbar) this.findViewById(R.id.tbarFindPwdStepOne);
@@ -68,18 +53,9 @@ public class FindPwdStepOneActivity extends AppCompatActivity {
         btnNextStep = (Button) this.findViewById(R.id.btnNextStep);
     }
 
-    /**
-     * 初始化View
-     */
-    private void initViews() {
-        tbarFindPwdStepOne.setNavigationIcon(R.drawable.back);
-        tbarFindPwdStepOne.setTitle(getResources().getText(R.string.find_password));
-    }
-
-    /**
-     * 设置监听
-     */
-    private void setListeners() {
+    @Override
+    protected void setListeners() {
+        super.setListeners();
 
         //导航栏回退
         tbarFindPwdStepOne.setNavigationOnClickListener(new View.OnClickListener() {
@@ -97,15 +73,16 @@ public class FindPwdStepOneActivity extends AppCompatActivity {
                 //验证手机号码是否合法
                 String phoneNumber = etPhoneNumber.getText().toString();
                 if (!PatternUtil.isPhoneNumberCorrect(phoneNumber)) {
-                    Toast.makeText(mContext, "请输入正确的手机号", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "请输入正确的手机号", Toast.LENGTH_LONG).show();
                     return;
                 }
-
-
 
                 //等待倒计时
                 btnSendVerificationCode.setEnabled(false);
                 mCountDownTimer.start();
+
+                //获取验证码。会触发EventHandler中的回调方法。
+                SMSSDK.getVerificationCode("86", phoneNumber);
             }
         });
 
@@ -114,35 +91,35 @@ public class FindPwdStepOneActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if (localVerify()) {
-                    mCountDownTimer.cancel();
-                    Intent intent = new Intent(FindPwdStepOneActivity.this, FindPwdStepTwoActivity.class);
-                    startActivity(intent);
-                }
+                String phoneNumber = etPhoneNumber.getText().toString();
+                String code = etVerificationCode.getText().toString();
+                SMSSDK.submitVerificationCode("86", phoneNumber, code);
             }
         });
     }
 
-
-
-    /**
-     * local验证：数据格式是否正确等
-     *
-     * @return
-     */
-    private boolean localVerify() {
-
-        String phoneNumber = etPhoneNumber.getText().toString();
-        String verificationCode = etVerificationCode.getText().toString();
-
-        if (!PatternUtil.isPhoneNumberCorrect(phoneNumber)) {
-            Toast.makeText(mContext, "请输入正确的手机号", Toast.LENGTH_LONG).show();
-            return false;
-        }
-
-
-        return true;
+    @Override
+    protected void doWhenSuccessGetVerificationCode() {
+        Toast.makeText(getApplicationContext(), "获取验证码【成功】", Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    protected void doWhenSuccessVerify() {
+        Toast.makeText(getApplicationContext(), "验证【成功】", Toast.LENGTH_SHORT).show();
+        mCountDownTimer.cancel();
+        Intent intent = new Intent(FindPwdStepOneActivity.this, FindPwdStepTwoActivity.class);
+        intent.putExtra("telephone", etPhoneNumber.getText().toString());
+        startActivity(intent);
+    }
+
+    @Override
+    protected void doWhenFailedGetVerificationCode() {
+        Toast.makeText(getApplicationContext(), "获取验证码【失败】", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void doWhenFailedVerify() {
+        Toast.makeText(getApplicationContext(), "验证【失败】", Toast.LENGTH_SHORT).show();
+    }
 
 }

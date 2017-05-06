@@ -98,7 +98,7 @@ public class SearchResultAdapter extends BaseAdapter {
             }
         }
 
-        holder.tvTitle.setText(news.getTitle());
+        holder.tvTitle.setText(lightKeyword(news.getTitle()));
         holder.tvSource.setText(news.getSource());
         holder.tvComments.setText(news.getCommentCount() + "次评论");
         holder.tvTime.setText(news.getDate());

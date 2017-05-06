@@ -89,7 +89,7 @@ public class SearchResultFragment extends BaseFragment {
         super.initViews();
 
         //初始化ListView
-        mAdapter = new SearchResultAdapter(getContext(), mKeyword);
+        mAdapter = new SearchResultAdapter(getContext().getApplicationContext(), mKeyword);
         lvSearchResult.setAdapter(mAdapter);
         lvSearchResult.setEmptyView(llytEmptyView);
         tvEmptyView.setText(getString(R.string.loading));
@@ -102,7 +102,7 @@ public class SearchResultFragment extends BaseFragment {
         lvSearchResult.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getContext(), NewsDetailActivity.class);
+                Intent intent = new Intent(getContext().getApplicationContext(), NewsDetailActivity.class);
                 Bundle bundle = new Bundle();
                 NewsBean news = (NewsBean) mAdapter.getItem(position);
                 bundle.putSerializable("news", news);
@@ -125,9 +125,9 @@ public class SearchResultFragment extends BaseFragment {
                 ResultBean<List<NewsBean>> result = response.body();
 
                 if (result.code == ResultBean.CODE_ERROR) {
-                    Toast.makeText(getContext(), result.msg, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext().getApplicationContext(), result.msg, Toast.LENGTH_SHORT).show();
                 } else if (result.code == ResultBean.CODE_DATASET_EMPTY) {
-                    Toast.makeText(getContext(), getString(R.string.no_data), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext().getApplicationContext(), getString(R.string.no_data), Toast.LENGTH_SHORT).show();
                     tvEmptyView.setText(getString(R.string.empty));
                 } else if (result.code == ResultBean.CODE_DATASET_NOT_EMPTY) {
                     mAdapter.resetDatas(result.data);

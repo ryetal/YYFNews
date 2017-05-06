@@ -102,7 +102,7 @@ public abstract class BaseNetworkFragment<T> extends BaseFragment {
 
         //判断网络是否可用
         if (!NetUtils.isNetworkConnected(getContext())) {
-            Toast.makeText(getContext(), getString(R.string.no_net), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext().getApplicationContext(), getString(R.string.no_net), Toast.LENGTH_SHORT).show();
             return false;
         }
 

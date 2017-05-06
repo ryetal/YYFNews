@@ -111,7 +111,7 @@ public class RegisterActivity extends AppCompatActivity {
                 //验证手机号码是否合法
                 String phoneNumber = etPhoneNumber.getText().toString();
                 if (!PatternUtil.isPhoneNumberCorrect(phoneNumber)) {
-                    Toast.makeText(mContext, "请输入正确的手机号", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "请输入正确的手机号", Toast.LENGTH_LONG).show();
                     return;
                 }
 
@@ -129,7 +129,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                 if (localVerify()) {
                     if (register()) {
-                        Toast.makeText(mContext, "注册成功", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "注册成功", Toast.LENGTH_LONG).show();
                     }
                 }
             }
@@ -182,19 +182,17 @@ public class RegisterActivity extends AppCompatActivity {
         String passwordAgain = etPasswordAgain.getText().toString();
 
         if (!PatternUtil.isPhoneNumberCorrect(phoneNumber)) {
-            Toast.makeText(mContext, "请输入正确的手机号", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "请输入正确的手机号", Toast.LENGTH_LONG).show();
             return false;
         }
 
-
-
         if (!PatternUtil.isPwdCorrect(password)) {
-            Toast.makeText(mContext, "密码格式错误", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "密码格式错误", Toast.LENGTH_LONG).show();
             return false;
         }
 
         if (!password.equals(passwordAgain)) {
-            Toast.makeText(mContext, "两次输入的密码不一样", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "两次输入的密码不一样", Toast.LENGTH_LONG).show();
             return false;
         }
 

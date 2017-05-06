@@ -141,7 +141,7 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
         tvEmptyView.setText(getString(R.string.empty));
 
         //初始化ListView
-        mAdapter = new HomeChildAdapter(getContext());
+        mAdapter = new HomeChildAdapter(getContext().getApplicationContext());
         lvHomeChild.setAdapter(mAdapter);
         lvHomeChild.setEmptyView(llytEmptyView);
 
@@ -199,7 +199,7 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
         lvHomeChild.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getContext(), NewsDetailActivity.class);
+                Intent intent = new Intent(getContext().getApplicationContext(), NewsDetailActivity.class);
                 Bundle bundle = new Bundle();
                 NewsBean news = (NewsBean) mAdapter.getItem(position);
                 bundle.putSerializable("news", news);
@@ -232,7 +232,7 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
         resetViews();
 
         if (mResult.code == ResultBean.CODE_ERROR) {
-            Toast.makeText(getContext(), mResult.msg, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext().getApplicationContext(), mResult.msg, Toast.LENGTH_SHORT).show();
             return;
         }
 
