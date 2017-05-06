@@ -15,13 +15,13 @@
         android:background="@color/colorPrimary"
         android:gravity="center_vertical"
         android:minHeight="?actionBarSize"
-        android:padding="5dp"
         app:navigationIcon="@drawable/back">
 
         <com.yyf.www.project_quicknews.view.SearchEditText
             android:id="@+id/etSearch"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="@dimen/dimen_130"
+            android:layout_marginRight="@dimen/dimen_30"
             android:imeOptions="actionSearch"
             android:inputType="text"
             android:maxLines="1"

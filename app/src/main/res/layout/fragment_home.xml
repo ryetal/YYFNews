@@ -30,7 +30,8 @@
             android:layout_width="@dimen/dimen_100"
             android:layout_height="@dimen/dimen_100"
             android:padding="@dimen/dimen_20"
-            android:src="@drawable/search" />
+            android:src="@drawable/search"
+            android:layout_marginRight="@dimen/dimen_25"/>
 
     </LinearLayout>
 

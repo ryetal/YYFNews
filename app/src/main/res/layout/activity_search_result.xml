@@ -15,7 +15,9 @@
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
         android:minHeight="?actionBarSize"
-        app:navigationIcon="@drawable/back" />
+        app:navigationIcon="@drawable/back"
+        app:title="@string/search_result"
+        app:titleTextColor="@color/white" />
 
     <FrameLayout
         android:id="@+id/flytContainer"
