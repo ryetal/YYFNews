@@ -50,6 +50,7 @@ public class ListViewInScrollView extends ListView {
         tvFooter = (TextView) vFooter.findViewById(R.id.tvFooter);
         tvFooter.setText("正在加载...");
         addFooterView(vFooter);
+        hideFooter();
     }
 
     public void showFooter() {
@@ -63,6 +64,7 @@ public class ListViewInScrollView extends ListView {
     public void completeLoading() {
         pbarFooter.setVisibility(View.GONE);
         tvFooter.setText("没有更多内容了");
+        showFooter();
     }
 
     @Override

@@ -104,10 +104,12 @@ public class NewsDetailActivity extends BaseActivity {
 
                 if (isBottom) {
 
+                    //已经完成全部数据加载，或者正在加载时，直接退出即可
                     if (mCommentFragment.isCompleteLoading() || mCommentFragment.isLoading()) {
                         return;
                     }
 
+                    //开始加载
                     mCommentFragment.startLoading();
                 }
             }

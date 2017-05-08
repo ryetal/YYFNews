@@ -39,6 +39,7 @@ public class LoginActivity extends BaseActivity {
     private TextView tvRegister;
 
     private IUserService mUserService;
+    private Call<ResultBean<UserBean>> mCall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,8 +136,8 @@ public class LoginActivity extends BaseActivity {
         String userName = etUserName.getText().toString();
         String password = etPassword.getText().toString();
 
-        Call<ResultBean<UserBean>> call = mUserService.login("login", userName, password);
-        call.enqueue(new Callback<ResultBean<UserBean>>() {
+        mCall = mUserService.login("login", userName, password);
+        mCall.enqueue(new Callback<ResultBean<UserBean>>() {
             @Override
             public void onResponse(Call<ResultBean<UserBean>> call, Response<ResultBean<UserBean>> response) {
 
@@ -163,7 +164,7 @@ public class LoginActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ResultBean<UserBean>> call, Throwable t) {
-
+                Toast.makeText(getApplicationContext(), "网络请求失败!", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -187,4 +188,12 @@ public class LoginActivity extends BaseActivity {
         sharedPreferencesUtil.putString("telephone", user.getTelephone());
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (mCall != null) {
+            mCall.cancel();
+        }
+    }
 }

@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import com.squareup.leakcanary.RefWatcher;
 import com.yyf.www.project_quicknews.application.NewsApplication;
 
-public abstract class BaseFragment extends Fragment {
+public abstract class  BaseFragment extends Fragment {
 
     private boolean mIsFirst;
     protected View mRootView; //root view

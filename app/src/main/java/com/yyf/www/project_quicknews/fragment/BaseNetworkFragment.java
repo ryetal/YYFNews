@@ -1,12 +1,12 @@
 package com.yyf.www.project_quicknews.fragment;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.yyf.www.project_quicknews.R;
 import com.yyf.www.project_quicknews.bean.ResultBean;
 import com.yyf.www.project_quicknews.type.ParameterizedTypeImpl;
 import com.yyf.www.project_quicknews.utils.NetUtils;
@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -35,7 +36,7 @@ public abstract class BaseNetworkFragment<T> extends BaseFragment {
     //从服务器上获取数据失败后的操作：response code is in [200..300)
     abstract void doWhenGetDatasFromServerFailed();
 
-    //请求失败后的操作：request could not be executed due to cancellation, a connectivity problem or timeout
+    //请求失败的操作：request could not be executed due to cancellation, a connectivity problem or timeout
     abstract void doWhenRequestFailed();
 
     //Handler Message
@@ -45,8 +46,8 @@ public abstract class BaseNetworkFragment<T> extends BaseFragment {
     private static final int MSG_BEFORE_REQUEST = 4;
 
     //OkHttp and Gson
-    private final OkHttpClient mClient = new OkHttpClient();
-    private final Gson mGson = new Gson();
+    private OkHttpClient mClient;
+    private Gson mGson = new Gson();
 
     protected Class<T> mClazz; //泛型具体类型
     protected boolean mIsDataset = true; //请求返回的是否是数据集，还是单个数据
@@ -85,28 +86,43 @@ public abstract class BaseNetworkFragment<T> extends BaseFragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mClient = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS).build();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
 
-        //cancel 网络请求
-        mClient.dispatcher().cancelAll();
+        mClient.dispatcher().cancelAll();   //cancel 网络请求
+        mNetworkHandler.removeCallbacksAndMessages(null); //清空所有callback 和 message
     }
 
     /**
-     * 从服务器上获取数据
+     * 发起一次请求
+     * <p>1.之前的request还未执行，本次request不执行</p>
+     * <p>2.本次request执行前，网络已经断开</p>
+     * <p>3.本次request执行时，网络被断开/网络出现问题/请求被取消等</p>
+     * <p>4.本次request执行成功</p>
      *
      * @param url
-     * @return 是否执行网络请求
+     * @return 是否发起网络请求
      */
+
     protected boolean doRequest(String url) {
 
-        //判断网络是否可用
-        if (!NetUtils.isNetworkConnected(getContext())) {
-            Toast.makeText(getContext().getApplicationContext(), getString(R.string.no_net), Toast.LENGTH_SHORT).show();
+        //1.之前的request还未执行，本次request不执行
+        if (isRequesting) {
             return false;
         }
 
-        if (isRequesting) {
+        //2.本次request执行前，网络已经断开
+        if (!NetUtils.isNetworkConnected(getContext())) {
+            mNetworkHandler.sendEmptyMessage(MSG_REQUEST_FAILED);
             return false;
         }
 
@@ -120,6 +136,8 @@ public abstract class BaseNetworkFragment<T> extends BaseFragment {
                 .url(url)
                 .build();
         mClient.newCall(request).enqueue(new Callback() {
+
+            //3.本次request执行时，网络被断开/网络出现问题/请求被取消等
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -128,6 +146,7 @@ public abstract class BaseNetworkFragment<T> extends BaseFragment {
                 mNetworkHandler.sendEmptyMessage(MSG_REQUEST_FAILED);
             }
 
+            //4.本次request执行成功
             @Override
             public void onResponse(Call call, Response response) throws IOException {
 
@@ -158,7 +177,6 @@ public abstract class BaseNetworkFragment<T> extends BaseFragment {
         });
 
         return true;
-
     }
 
     private <T> ResultBean<T> fromJsonObject(Reader reader, Class<T> clazz) {

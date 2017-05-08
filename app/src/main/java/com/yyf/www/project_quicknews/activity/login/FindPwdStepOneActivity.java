@@ -122,4 +122,11 @@ public class FindPwdStepOneActivity extends BaseVerifyActivity {
         Toast.makeText(getApplicationContext(), "验证【失败】", Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        mCountDownTimer.cancel();
+        mCountDownTimer = null;
+    }
 }

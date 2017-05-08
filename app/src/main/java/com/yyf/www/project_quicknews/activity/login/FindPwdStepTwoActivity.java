@@ -33,6 +33,7 @@ public class FindPwdStepTwoActivity extends BaseActivity {
     private Button btnReset;
 
     private IUserService mUserService;
+    private Call<ResultBean<Integer>> mCall;
 
     @Override
     protected int getContentViewId() {
@@ -119,8 +120,8 @@ public class FindPwdStepTwoActivity extends BaseActivity {
 
         String newPassword = etPassword.getText().toString();
 
-        Call<ResultBean<Integer>> call = mUserService.resetPassword("resetPassword", mTelephone, newPassword);
-        call.enqueue(new Callback<ResultBean<Integer>>() {
+        mCall = mUserService.resetPassword("resetPassword", mTelephone, newPassword);
+        mCall.enqueue(new Callback<ResultBean<Integer>>() {
             @Override
             public void onResponse(Call<ResultBean<Integer>> call, Response<ResultBean<Integer>> response) {
 
@@ -151,10 +152,17 @@ public class FindPwdStepTwoActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ResultBean<Integer>> call, Throwable t) {
-
+                Toast.makeText(getApplicationContext(), "网络请求失败!", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
+        if (mCall != null) {
+            mCall.cancel();
+        }
+    }
 }

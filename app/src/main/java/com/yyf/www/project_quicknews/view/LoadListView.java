@@ -12,7 +12,20 @@ import android.widget.TextView;
 
 import com.yyf.www.project_quicknews.R;
 
+/**
+ * 1.只在加载时显示【加载Footer】
+ * 2.只在全部数据加载完成后显示【完成Footer】
+ * 3.只有在加载失败时显示【失败Footer】
+ * 4.其他情况下隐藏【Footer】
+ */
 public class LoadListView extends ListView implements AbsListView.OnScrollListener {
+
+    public static final int STATUS_LOADING = 1; //正在加载数据，显示【加载Footer】
+    public static final int STATUS_COMPLETE = 2; //全部数据已经加载完成，显示【完成Footer】
+    public static final int STATUS_FAILED = 3; //只有在加载失败时显示【失败Footer】
+    public static final int STATUS_HIDE = 4; //其他情况，footer 隐藏
+
+    private int mCurStatus = STATUS_HIDE;
 
     //回调接口///////////////////////////////////////////////////////
     public interface OnLoadScrollListener extends AbsListView.OnScrollListener {
@@ -33,8 +46,6 @@ public class LoadListView extends ListView implements AbsListView.OnScrollListen
 
     private int mLastVisibleItem;
     private int mTotalItemCount;
-    private boolean isLoading;
-    private boolean isCompleteLoading;
 
     public LoadListView(Context context) {
         this(context, null);
@@ -47,52 +58,9 @@ public class LoadListView extends ListView implements AbsListView.OnScrollListen
     public LoadListView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        isLoading = false;
-        isCompleteLoading = false;
         setOnScrollListener(this);
         addFooter(); //添加Footer
-    }
-
-    /**
-     * 添加footer
-     */
-    private void addFooter() {
-        vFooter = LayoutInflater.from(getContext()).inflate(R.layout.footer, null);
-        llytFooter = (LinearLayout) vFooter.findViewById(R.id.llytFooter);
-        pbarFooter = (ProgressBar) vFooter.findViewById(R.id.pbarFooter);
-        tvFooter = (TextView) vFooter.findViewById(R.id.tvFooter);
-        tvFooter.setText("正在加载...");
-        this.addFooterView(vFooter);
-    }
-
-    /**
-     * 隐藏footer
-     */
-    private void hideFooter() {
-        llytFooter.setVisibility(GONE);
-    }
-
-    /**
-     * 显示footer
-     */
-    private void showFooter() {
-        llytFooter.setVisibility(VISIBLE);
-    }
-
-    /**
-     * 全部数据加载完成
-     */
-    public void completeLoading() {
-        isCompleteLoading = true;
-        pbarFooter.setVisibility(View.GONE);
-        tvFooter.setText("没有更多内容了");
-    }
-
-    /**
-     * 完成一次loading
-     */
-    public void finishOneLoading(){
-        isLoading = false;
+        hideFooter();//隐藏Footer
     }
 
     @Override
@@ -102,18 +70,18 @@ public class LoadListView extends ListView implements AbsListView.OnScrollListen
             mOnLoadScrollListener.onScrollStateChanged(view, scrollState);
         }
 
-        if (isCompleteLoading) {
+        //已经显示了footer时，直接返回
+        if (mCurStatus == STATUS_LOADING || mCurStatus == STATUS_COMPLETE) {
             return;
         }
 
-        //当停止滚动并且显示最后一条数据时，加载更多数据
+        //未显示footer时，滚动到底则显示【加载footer】，加载更多数据
         if (scrollState == OnScrollListener.SCROLL_STATE_IDLE
                 && mLastVisibleItem == mTotalItemCount) {
 
-            if (isLoading) {
-                return;
-            }
-            isLoading = true;
+            mCurStatus = STATUS_LOADING;
+            showLoadingFooter();
+
             if (mOnLoadScrollListener != null) {
                 mOnLoadScrollListener.onLoad();
             }
@@ -130,5 +98,82 @@ public class LoadListView extends ListView implements AbsListView.OnScrollListen
 
         mLastVisibleItem = firstVisibleItem + visibleItemCount;
         mTotalItemCount = totalItemCount;
+    }
+
+
+    /**
+     * 添加footer
+     */
+    private void addFooter() {
+        vFooter = LayoutInflater.from(getContext()).inflate(R.layout.footer, null);
+        llytFooter = (LinearLayout) vFooter.findViewById(R.id.llytFooter);
+        pbarFooter = (ProgressBar) vFooter.findViewById(R.id.pbarFooter);
+        tvFooter = (TextView) vFooter.findViewById(R.id.tvFooter);
+        addFooterView(vFooter);
+    }
+
+    /**
+     * 隐藏footer
+     */
+    private void hideFooter() {
+        llytFooter.setVisibility(GONE);
+    }
+
+    /**
+     * 显示footer
+     */
+    private void showFooter() {
+        llytFooter.setVisibility(VISIBLE);
+    }
+
+
+    /**
+     * 显示【加载Footer】
+     */
+    private void showLoadingFooter() {
+        pbarFooter.setVisibility(View.VISIBLE);
+        tvFooter.setText("正在加载...");
+        showFooter();
+    }
+
+    /**
+     * 显示【完成Footer】
+     */
+    private void showCompleteFooter() {
+        pbarFooter.setVisibility(View.GONE);
+        tvFooter.setText("没有更多内容了");
+        showFooter();
+    }
+
+    /**
+     * 显示【失败Footer】
+     */
+    private void showFailedFooter() {
+        pbarFooter.setVisibility(View.GONE);
+        tvFooter.setText("加载失败，请重试");
+        showFooter();
+    }
+
+    /**
+     * 一次Loading结束
+     */
+    public void doAfterOneLoading(int status) {
+
+        switch (status) {
+            case STATUS_COMPLETE:
+                showCompleteFooter();
+                break;
+            case STATUS_FAILED:
+                showFailedFooter();
+                break;
+            case STATUS_HIDE:
+                hideFooter();
+                break;
+            default:
+                throw new IllegalArgumentException("status must be STATUS_COMPLETE or " +
+                        "STATUS_FAILED or STATUS_NONE");
+        }
+
+        mCurStatus = status;
     }
 }

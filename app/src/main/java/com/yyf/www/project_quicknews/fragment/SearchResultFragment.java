@@ -37,6 +37,7 @@ public class SearchResultFragment extends BaseFragment {
     private SearchResultAdapter mAdapter;
 
     private INewsService mNewsService;
+    private Call<ResultBean<List<NewsBean>>> mCall;
 
     public SearchResultFragment() {
         // Required empty public constructor
@@ -117,8 +118,8 @@ public class SearchResultFragment extends BaseFragment {
     protected void initDatas() {
         super.initDatas();
 
-        Call<ResultBean<List<NewsBean>>> call = mNewsService.getNews("getNewsByKeyword", mKeyword);
-        call.enqueue(new Callback<ResultBean<List<NewsBean>>>() {
+        mCall = mNewsService.getNews("getNewsByKeyword", mKeyword);
+        mCall.enqueue(new Callback<ResultBean<List<NewsBean>>>() {
             @Override
             public void onResponse(Call<ResultBean<List<NewsBean>>> call, Response<ResultBean<List<NewsBean>>> response) {
 
@@ -137,10 +138,20 @@ public class SearchResultFragment extends BaseFragment {
 
             @Override
             public void onFailure(Call<ResultBean<List<NewsBean>>> call, Throwable t) {
-
+                Toast.makeText(getContext().getApplicationContext(), "网络请求失败!", Toast.LENGTH_SHORT).show();
             }
         });
 
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        if (mCall != null) {
+            mCall.cancel();
+        }
     }
 
 }

@@ -32,6 +32,7 @@ public class SearchHotFragment extends BaseFragment {
     private int mItemCount = 9;
 
     private ISearchHotService mSearchHotServicae;
+    private Call<ResultBean<List<String>>> mCall;
 
     public SearchHotFragment() {
         // Required empty public constructor
@@ -93,8 +94,8 @@ public class SearchHotFragment extends BaseFragment {
     @Override
     protected void initDatas() {
 
-        Call<ResultBean<List<String>>> call = mSearchHotServicae.getSearchHot();
-        call.enqueue(new Callback<ResultBean<List<String>>>() {
+        mCall = mSearchHotServicae.getSearchHot();
+        mCall.enqueue(new Callback<ResultBean<List<String>>>() {
             @Override
             public void onResponse(Call<ResultBean<List<String>>> call, Response<ResultBean<List<String>>> response) {
 
@@ -112,9 +113,19 @@ public class SearchHotFragment extends BaseFragment {
 
             @Override
             public void onFailure(Call<ResultBean<List<String>>> call, Throwable t) {
-
+                Toast.makeText(getContext().getApplicationContext(), "网络请求失败!", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        if (mCall != null) {
+            mCall.cancel();
+        }
     }
 
 }

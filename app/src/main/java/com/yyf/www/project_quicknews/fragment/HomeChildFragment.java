@@ -158,9 +158,10 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
             public void onRefresh() {
 
                 if (doRequest(String.format(mURL, 0))) {
-                    mCleared = true;
+                    mCleared = true; //发起了一次请求
                 } else {
-                    resetViews();
+                    //没有发起请求：比如之前上拉加载更多发起了一次请求，但该次请求还未处理完，就进行了刷新。
+                    srlytHomeChild.setRefreshing(false);
                 }
             }
         });
@@ -171,9 +172,10 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
             public void onLoad() {
 
                 if (doRequest(String.format(mURL, mAdapter.getCount()))) {
-                    mCleared = false;
+                    mCleared = false; //发起一次请求
                 } else {
-                    resetViews();
+                    //没有发起请求：比如之前刷新发起了一次请求，但该次请求还未处理完，就进行了上拉加载更多。
+                    lvHomeChild.doAfterOneLoading(LoadListView.STATUS_HIDE);
                 }
             }
 
@@ -216,8 +218,6 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
 
         if (doRequest(String.format(mURL, 0))) {
             mCleared = true;
-        } else {
-            resetViews();
         }
     }
 
@@ -229,23 +229,24 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
     @Override
     void doWhenGetDatasFromServerSuccess() {
 
-        resetViews();
+        resetViewsAfterOneLoading();
 
         if (mResult.code == ResultBean.CODE_ERROR) {
             Toast.makeText(getContext().getApplicationContext(), mResult.msg, Toast.LENGTH_SHORT).show();
+            lvHomeChild.doAfterOneLoading(LoadListView.STATUS_HIDE);
             return;
         }
 
         if (mResult.code == ResultBean.CODE_DATASET_EMPTY) {
-            lvHomeChild.completeLoading();
+            lvHomeChild.doAfterOneLoading(LoadListView.STATUS_COMPLETE);
             return;
         }
 
         if (mResult.code == ResultBean.CODE_DATASET_NOT_EMPTY) {
             List<NewsBean> datas = (List<NewsBean>) mResult.data;
-            if (datas.size() < SIZE) {
-                lvHomeChild.completeLoading();
-            }
+            lvHomeChild.doAfterOneLoading(datas.size() < SIZE ?
+                    LoadListView.STATUS_COMPLETE : LoadListView.STATUS_HIDE);
+            resetViewsAfterOneLoading();
             if (mCleared) {
                 mAdapter.resetDatas(datas);
             } else {
@@ -257,19 +258,24 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
 
     @Override
     void doWhenGetDatasFromServerFailed() {
-        resetViews();
+
+        Toast.makeText(getContext().getApplicationContext(), "get data failed !", Toast.LENGTH_SHORT).show();
+        lvHomeChild.doAfterOneLoading(LoadListView.STATUS_HIDE);
+        resetViewsAfterOneLoading();
     }
 
     @Override
     void doWhenRequestFailed() {
-        resetViews();
+
+        Toast.makeText(getContext().getApplicationContext(), "request failed !", Toast.LENGTH_SHORT).show();
+        lvHomeChild.doAfterOneLoading(LoadListView.STATUS_FAILED);
+        resetViewsAfterOneLoading();
     }
 
     /**
-     * 重置 View
+     * 一次加载后，重置 View
      */
-    private void resetViews() {
-        lvHomeChild.finishOneLoading();
+    private void resetViewsAfterOneLoading() {
         srlytHomeChild.setRefreshing(false);
         tvEmptyView.setText(getString(R.string.empty));
     }

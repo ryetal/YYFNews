@@ -24,15 +24,17 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CommentFragment extends BaseFragment {
 
-    private static final int SIZE = 10;
+    private static final int SIZE = 10; //每次加载的数据量
 
     private ListViewInScrollView lvComments;
     private CommentAdapter mAdapter;
-    private boolean isLoading;
-    private boolean isCompleteLoading;
-    private int mNewsId;
+
+    private boolean isLoading; //是否正在加载
+    private boolean isCompleteLoading; //是否完成了全部数据的加载
+    private int mNewsId; //新闻id
 
     private ICommentService mCommentService;
+    private Call<ResultBean<List<CommentBean>>> mCall;
 
     public CommentFragment() {
         // Required empty public constructor
@@ -79,27 +81,42 @@ public class CommentFragment extends BaseFragment {
         lvComments.setAdapter(mAdapter);
     }
 
+    /*
+     * 是否正在加载数据
+     */
     public boolean isLoading() {
         return isLoading;
     }
 
-    public void startLoading() {
-        this.isLoading = true;
-        doRequest(mAdapter.getCount());
-    }
-
+    /*
+     * 是否完成了全部数据的加载
+     */
     public boolean isCompleteLoading() {
         return isCompleteLoading;
     }
 
+    /*
+     * 开始加载数据
+     */
+    public void startLoading() {
+        this.isLoading = true;
+        lvComments.showFooter();
+        doRequest(mAdapter.getCount());
+    }
+
+    /*
+     * 一次网络请求
+     */
     private void doRequest(int offset) {
 
-        Call<ResultBean<List<CommentBean>>> call = mCommentService.getComments("getComments", mNewsId, offset, SIZE);
-        call.enqueue(new Callback<ResultBean<List<CommentBean>>>() {
+        mCall = mCommentService.getComments("getComments", mNewsId, offset, SIZE);
+        mCall.enqueue(new Callback<ResultBean<List<CommentBean>>>() {
             @Override
             public void onResponse(Call<ResultBean<List<CommentBean>>> call, Response<ResultBean<List<CommentBean>>> response) {
 
+                lvComments.hideFooter();
                 isLoading = false;
+
                 ResultBean<List<CommentBean>> result = response.body();
 
                 if (result.code == ResultBean.CODE_ERROR) {
@@ -126,11 +143,19 @@ public class CommentFragment extends BaseFragment {
 
             @Override
             public void onFailure(Call<ResultBean<List<CommentBean>>> call, Throwable t) {
-                Toast.makeText(getContext().getApplicationContext(), "请求失败" + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext().getApplicationContext(), "网络请求失败!", Toast.LENGTH_SHORT).show();
                 lvComments.hideFooter();
                 isLoading = false;
             }
         });
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        if (mCall != null) {
+            mCall.cancel();
+        }
+    }
 }

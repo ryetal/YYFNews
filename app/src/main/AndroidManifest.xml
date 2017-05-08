@@ -45,20 +45,11 @@
 
         <!--注册-->
         <activity android:name=".activity.register.RegisterActivity" />
-
         <activity android:name=".activity.register.AgreementActivity" />
 
         <!--找回密码-->
         <activity android:name=".activity.login.FindPwdStepOneActivity" />
-
         <activity android:name=".activity.login.FindPwdStepTwoActivity" />
-
-
-        <receiver android:name=".receiver.NetWorkStatusReceiver">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-            </intent-filter>
-        </receiver>
 
         <!--短信验证-->
         <activity
@@ -67,6 +58,12 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:windowSoftInputMode="stateHidden|adjustResize" />
 
+        <!--网络状态 receiver-->
+        <receiver android:name=".receiver.NetWorkStatusReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
 
     </application>
 
