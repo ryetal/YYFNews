@@ -14,6 +14,7 @@ import com.yyf.www.project_quicknews.bean.ResultBean;
 import com.yyf.www.project_quicknews.bean.event.SearchEvent;
 import com.yyf.www.project_quicknews.global.GlobalValues;
 import com.yyf.www.project_quicknews.net.ISearchHotService;
+import com.yyf.www.project_quicknews.utils.ToastUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -36,6 +37,7 @@ public class SearchHotFragment extends BaseFragment {
 
     public SearchHotFragment() {
         // Required empty public constructor
+        mFragmentName = "searchHot";
     }
 
     public static SearchHotFragment newInstance(int hotCount) {
@@ -102,9 +104,9 @@ public class SearchHotFragment extends BaseFragment {
                 ResultBean<List<String>> result = response.body();
 
                 if (result.code == ResultBean.CODE_ERROR) {
-                    Toast.makeText(getContext().getApplicationContext(), result.msg, Toast.LENGTH_SHORT).show();
+                    ToastUtil.showToast(result.msg,Toast.LENGTH_SHORT);
                 } else if (result.code == ResultBean.CODE_DATASET_EMPTY) {
-                    Toast.makeText(getContext().getApplicationContext(), "没有热门推荐数据", Toast.LENGTH_SHORT).show();
+                    //
                 } else if (result.code == ResultBean.CODE_DATASET_NOT_EMPTY) {
                     List<String> datas = result.data;
                     mAdapter.addDatas(datas);
@@ -113,7 +115,8 @@ public class SearchHotFragment extends BaseFragment {
 
             @Override
             public void onFailure(Call<ResultBean<List<String>>> call, Throwable t) {
-                Toast.makeText(getContext().getApplicationContext(), "网络请求失败!", Toast.LENGTH_SHORT).show();
+
+                ToastUtil.showToast("网络请求失败!", Toast.LENGTH_SHORT);
             }
         });
     }

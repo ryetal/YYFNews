@@ -47,6 +47,9 @@ public class NewsApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        context = getApplicationContext();
+
         if (LeakCanary.isInAnalyzerProcess(this)) {
             // This process is dedicated to LeakCanary for heap analysis.
             // You should not init your app in this process.
@@ -60,6 +63,12 @@ public class NewsApplication extends Application {
     protected RefWatcher installLeakCanary() {
 //        return RefWatcher.DISABLED;  //for release
         return LeakCanary.install(this);  //for debug
+    }
+
+    private static Context context;
+
+    public static Context getAppContext() {
+        return context;
     }
 
 }

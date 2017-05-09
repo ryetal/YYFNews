@@ -18,6 +18,7 @@ public class SearchHotAndHistoryFragment extends BaseFragment {
 
     public SearchHotAndHistoryFragment() {
         // Required empty public constructor
+        mFragmentName = "searchHotAndHistory";
     }
 
     public static SearchHotAndHistoryFragment newInstance() {

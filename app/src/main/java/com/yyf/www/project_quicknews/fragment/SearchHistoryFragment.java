@@ -30,6 +30,7 @@ public class SearchHistoryFragment extends BaseFragment {
 
     public SearchHistoryFragment() {
         // Required empty public constructor
+        mFragmentName = "searchHistory";
     }
 
     public static SearchHistoryFragment newInstance() {

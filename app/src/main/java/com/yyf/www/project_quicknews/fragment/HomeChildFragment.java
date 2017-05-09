@@ -12,17 +12,21 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.reflect.TypeToken;
 import com.yyf.www.project_quicknews.R;
 import com.yyf.www.project_quicknews.activity.NewsDetailActivity;
 import com.yyf.www.project_quicknews.adapter.HomeChildAdapter;
 import com.yyf.www.project_quicknews.bean.NewsBean;
 import com.yyf.www.project_quicknews.bean.ResultBean;
 import com.yyf.www.project_quicknews.global.GlobalValues;
+import com.yyf.www.project_quicknews.okhttp.GsonParser;
+import com.yyf.www.project_quicknews.utils.ToastUtil;
 import com.yyf.www.project_quicknews.view.LoadListView;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
-public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
+public class HomeChildFragment<T extends ResultBean<List<NewsBean>>> extends BaseNetworkFragment<T> {
 
     private static final int SIZE = 20;  //每次加载20条数据
 
@@ -42,6 +46,9 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
     private HomeChildAdapter mAdapter;
     private boolean mCleared;
 
+    private Type mType = new TypeToken<ResultBean<List<NewsBean>>>() {
+    }.getType();
+
     public HomeChildFragment() {
         // Required empty public constructor
     }
@@ -56,9 +63,39 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
         HomeChildFragment fragment = new HomeChildFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable("childType", childType);
+
+        //设置Fragment的名称，方便日志查看
+        switch (childType) {
+            case Recommend:
+                fragment.mFragmentName = "recommend";
+                break;
+            case Hot:
+                fragment.mFragmentName = "hot";
+                break;
+            case Video:
+                fragment.mFragmentName = "video";
+                break;
+            case Society:
+                fragment.mFragmentName = "society";
+                break;
+            case Episode:
+                fragment.mFragmentName = "episode";
+                break;
+            case Picture:
+                fragment.mFragmentName = "picture";
+                break;
+            case Entertainment:
+                fragment.mFragmentName = "enterainment";
+                break;
+            case Technology:
+                fragment.mFragmentName = "techonology";
+                break;
+        }
+
         fragment.setArguments(bundle);
         return fragment;
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,54 +104,31 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
         mChildType = (ChildType) getArguments().getSerializable("childType");
         switch (mChildType) {
             case Recommend:
-                mClazz = NewsBean.class;
-                mIsDataset = true;
                 mURL = GlobalValues.BASE_URL + "servlet/NewsServlet?action=getNews&type=0";
-                index = 0;
                 break;
             case Hot:
-                mClazz = NewsBean.class;
-                mIsDataset = true;
                 mURL = GlobalValues.BASE_URL + "servlet/NewsServlet?action=getNews&type=1";
-                index = 1;
                 break;
             case Video:
-                mClazz = NewsBean.class;
-                mIsDataset = true;
                 mURL = GlobalValues.BASE_URL + "servlet/NewsServlet?action=getNews&type=2";
-                index = 2;
                 break;
             case Society:
-                mClazz = NewsBean.class;
-                mIsDataset = true;
                 mURL = GlobalValues.BASE_URL + "servlet/NewsServlet?action=getNews&type=3";
-                index = 3;
                 break;
             case Episode:
-                mClazz = NewsBean.class;
-                mIsDataset = true;
                 mURL = GlobalValues.BASE_URL + "servlet/NewsServlet?action=getNews&type=4";
-                index = 4;
                 break;
             case Picture:
-                mClazz = NewsBean.class;
-                mIsDataset = true;
                 mURL = GlobalValues.BASE_URL + "servlet/NewsServlet?action=getNews&type=5";
-                index = 5;
                 break;
             case Entertainment:
-                mClazz = NewsBean.class;
-                mIsDataset = true;
                 mURL = GlobalValues.BASE_URL + "servlet/NewsServlet?action=getNews&type=6";
-                index = 6;
                 break;
             case Technology:
-                mClazz = NewsBean.class;
-                mIsDataset = true;
                 mURL = GlobalValues.BASE_URL + "servlet/NewsServlet?action=getNews&type=7";
-                index = 7;
                 break;
         }
+
         mURL = mURL + "&offset=%d&size=" + SIZE;
     }
 
@@ -157,7 +171,7 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
             @Override
             public void onRefresh() {
 
-                if (doRequest(String.format(mURL, 0))) {
+                if (doRequest(String.format(mURL, 0), new GsonParser<T>(mType))) {
                     mCleared = true; //发起了一次请求
                 } else {
                     //没有发起请求：比如之前上拉加载更多发起了一次请求，但该次请求还未处理完，就进行了刷新。
@@ -171,7 +185,7 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
             @Override
             public void onLoad() {
 
-                if (doRequest(String.format(mURL, mAdapter.getCount()))) {
+                if (doRequest(String.format(mURL, mAdapter.getCount()), new GsonParser<T>(mType))) {
                     mCleared = false; //发起一次请求
                 } else {
                     //没有发起请求：比如之前刷新发起了一次请求，但该次请求还未处理完，就进行了上拉加载更多。
@@ -216,7 +230,7 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
     protected void initDatas() {
         super.initDatas();
 
-        if (doRequest(String.format(mURL, 0))) {
+        if (doRequest(String.format(mURL, 0), new GsonParser<T>(mType))) {
             mCleared = true;
         }
     }
@@ -227,23 +241,23 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
     }
 
     @Override
-    void doWhenGetDatasFromServerSuccess() {
+    void doOnResponseSuccess(T result) {
 
         resetViewsAfterOneLoading();
 
-        if (mResult.code == ResultBean.CODE_ERROR) {
-            Toast.makeText(getContext().getApplicationContext(), mResult.msg, Toast.LENGTH_SHORT).show();
+        if (result.code == ResultBean.CODE_ERROR) {
+            ToastUtil.showToast(result.msg,Toast.LENGTH_SHORT);
             lvHomeChild.doAfterOneLoading(LoadListView.STATUS_HIDE);
             return;
         }
 
-        if (mResult.code == ResultBean.CODE_DATASET_EMPTY) {
+        if (result.code == ResultBean.CODE_DATASET_EMPTY) {
             lvHomeChild.doAfterOneLoading(LoadListView.STATUS_COMPLETE);
             return;
         }
 
-        if (mResult.code == ResultBean.CODE_DATASET_NOT_EMPTY) {
-            List<NewsBean> datas = (List<NewsBean>) mResult.data;
+        if (result.code == ResultBean.CODE_DATASET_NOT_EMPTY) {
+            List<NewsBean> datas = result.data;
             lvHomeChild.doAfterOneLoading(datas.size() < SIZE ?
                     LoadListView.STATUS_COMPLETE : LoadListView.STATUS_HIDE);
             resetViewsAfterOneLoading();
@@ -253,21 +267,18 @@ public class HomeChildFragment extends BaseNetworkFragment<NewsBean> {
                 mAdapter.addDatas(datas);
             }
         }
-
     }
 
     @Override
-    void doWhenGetDatasFromServerFailed() {
-
-        Toast.makeText(getContext().getApplicationContext(), "get data failed !", Toast.LENGTH_SHORT).show();
+    void doOnResponseFailure() {
         lvHomeChild.doAfterOneLoading(LoadListView.STATUS_HIDE);
         resetViewsAfterOneLoading();
     }
 
     @Override
-    void doWhenRequestFailed() {
+    void doOnFailure() {
 
-        Toast.makeText(getContext().getApplicationContext(), "request failed !", Toast.LENGTH_SHORT).show();
+        ToastUtil.showToast("网络请求失败!", Toast.LENGTH_SHORT);
         lvHomeChild.doAfterOneLoading(LoadListView.STATUS_FAILED);
         resetViewsAfterOneLoading();
     }

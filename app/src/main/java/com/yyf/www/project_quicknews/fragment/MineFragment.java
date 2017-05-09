@@ -35,6 +35,7 @@ public class MineFragment extends BaseFragment {
 
     public MineFragment() {
         // Required empty public constructor
+        mFragmentName = "mine";
     }
 
     public static MineFragment newInstance() {

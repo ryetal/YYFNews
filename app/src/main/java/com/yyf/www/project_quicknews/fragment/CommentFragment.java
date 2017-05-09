@@ -12,6 +12,7 @@ import com.yyf.www.project_quicknews.bean.CommentBean;
 import com.yyf.www.project_quicknews.bean.ResultBean;
 import com.yyf.www.project_quicknews.global.GlobalValues;
 import com.yyf.www.project_quicknews.net.ICommentService;
+import com.yyf.www.project_quicknews.utils.ToastUtil;
 import com.yyf.www.project_quicknews.view.ListViewInScrollView;
 
 import java.util.List;
@@ -38,6 +39,7 @@ public class CommentFragment extends BaseFragment {
 
     public CommentFragment() {
         // Required empty public constructor
+        mFragmentName = "comment";
     }
 
     public static CommentFragment newInstance(int newsId) {
@@ -120,7 +122,7 @@ public class CommentFragment extends BaseFragment {
                 ResultBean<List<CommentBean>> result = response.body();
 
                 if (result.code == ResultBean.CODE_ERROR) {
-                    Toast.makeText(getContext().getApplicationContext(), result.msg, Toast.LENGTH_SHORT).show();
+                    ToastUtil.showToast(result.msg,Toast.LENGTH_SHORT);
                     return;
                 }
 
@@ -143,7 +145,8 @@ public class CommentFragment extends BaseFragment {
 
             @Override
             public void onFailure(Call<ResultBean<List<CommentBean>>> call, Throwable t) {
-                Toast.makeText(getContext().getApplicationContext(), "网络请求失败!", Toast.LENGTH_SHORT).show();
+
+                ToastUtil.showToast("网络请求失败!", Toast.LENGTH_SHORT);
                 lvComments.hideFooter();
                 isLoading = false;
             }

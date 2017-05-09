@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.yyf.www.project_quicknews.R;
 import com.yyf.www.project_quicknews.activity.BaseVerifyActivity;
 import com.yyf.www.project_quicknews.utils.PatternUtil;
+import com.yyf.www.project_quicknews.utils.ToastUtil;
 
 import cn.smssdk.SMSSDK;
 
@@ -73,7 +74,7 @@ public class FindPwdStepOneActivity extends BaseVerifyActivity {
                 //验证手机号码是否合法
                 String phoneNumber = etPhoneNumber.getText().toString();
                 if (!PatternUtil.isPhoneNumberCorrect(phoneNumber)) {
-                    Toast.makeText(getApplicationContext(), "请输入正确的手机号", Toast.LENGTH_LONG).show();
+                    ToastUtil.showToast("请输入正确的手机号", Toast.LENGTH_LONG);
                     return;
                 }
 
@@ -100,12 +101,12 @@ public class FindPwdStepOneActivity extends BaseVerifyActivity {
 
     @Override
     protected void doWhenSuccessGetVerificationCode() {
-        Toast.makeText(getApplicationContext(), "获取验证码【成功】", Toast.LENGTH_SHORT).show();
+        ToastUtil.showToast("获取验证码【成功】", Toast.LENGTH_LONG);
     }
 
     @Override
     protected void doWhenSuccessVerify() {
-        Toast.makeText(getApplicationContext(), "验证【成功】", Toast.LENGTH_SHORT).show();
+        ToastUtil.showToast("验证【成功】", Toast.LENGTH_LONG);
         mCountDownTimer.cancel();
         Intent intent = new Intent(FindPwdStepOneActivity.this, FindPwdStepTwoActivity.class);
         intent.putExtra("telephone", etPhoneNumber.getText().toString());
@@ -114,12 +115,12 @@ public class FindPwdStepOneActivity extends BaseVerifyActivity {
 
     @Override
     protected void doWhenFailedGetVerificationCode() {
-        Toast.makeText(getApplicationContext(), "获取验证码【失败】", Toast.LENGTH_SHORT).show();
+        ToastUtil.showToast("获取验证码【失败】", Toast.LENGTH_LONG);
     }
 
     @Override
     protected void doWhenFailedVerify() {
-        Toast.makeText(getApplicationContext(), "验证【失败】", Toast.LENGTH_SHORT).show();
+        ToastUtil.showToast("验证【失败】", Toast.LENGTH_LONG);
     }
 
     @Override

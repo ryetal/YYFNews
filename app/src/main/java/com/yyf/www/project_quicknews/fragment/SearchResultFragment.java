@@ -18,6 +18,7 @@ import com.yyf.www.project_quicknews.bean.NewsBean;
 import com.yyf.www.project_quicknews.bean.ResultBean;
 import com.yyf.www.project_quicknews.global.GlobalValues;
 import com.yyf.www.project_quicknews.net.INewsService;
+import com.yyf.www.project_quicknews.utils.ToastUtil;
 
 import java.util.List;
 
@@ -41,6 +42,7 @@ public class SearchResultFragment extends BaseFragment {
 
     public SearchResultFragment() {
         // Required empty public constructor
+        mFragmentName = "searchResult";
     }
 
     /**
@@ -126,9 +128,9 @@ public class SearchResultFragment extends BaseFragment {
                 ResultBean<List<NewsBean>> result = response.body();
 
                 if (result.code == ResultBean.CODE_ERROR) {
-                    Toast.makeText(getContext().getApplicationContext(), result.msg, Toast.LENGTH_SHORT).show();
+                    ToastUtil.showToast(result.msg, Toast.LENGTH_SHORT);
                 } else if (result.code == ResultBean.CODE_DATASET_EMPTY) {
-                    Toast.makeText(getContext().getApplicationContext(), getString(R.string.no_data), Toast.LENGTH_SHORT).show();
+                    ToastUtil.showToast(getString(R.string.no_data), Toast.LENGTH_SHORT);
                     tvEmptyView.setText(getString(R.string.empty));
                 } else if (result.code == ResultBean.CODE_DATASET_NOT_EMPTY) {
                     mAdapter.resetDatas(result.data);
@@ -138,7 +140,8 @@ public class SearchResultFragment extends BaseFragment {
 
             @Override
             public void onFailure(Call<ResultBean<List<NewsBean>>> call, Throwable t) {
-                Toast.makeText(getContext().getApplicationContext(), "网络请求失败!", Toast.LENGTH_SHORT).show();
+
+                ToastUtil.showToast("网络请求失败!", Toast.LENGTH_SHORT);
             }
         });
 

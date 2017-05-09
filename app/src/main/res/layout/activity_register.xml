@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/content_login"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,7 +10,11 @@
         android:id="@+id/tbarRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#0176da" />
+        android:background="@color/colorPrimary"
+        android:minHeight="?actionBarSize"
+        app:navigationIcon="@drawable/back"
+        app:title="@string/register_new"
+        app:titleTextColor="@color/white" />
 
     <LinearLayout
         android:layout_width="@dimen/dimen_900"

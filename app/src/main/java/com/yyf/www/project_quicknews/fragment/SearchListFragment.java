@@ -24,6 +24,7 @@ public class SearchListFragment extends BaseFragment {
 
     public SearchListFragment() {
         // Required empty public constructor
+        mFragmentName = "searchList";
     }
 
     public static SearchListFragment newInstance() {

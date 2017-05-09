@@ -132,20 +132,17 @@ public class FindPwdStepTwoActivity extends BaseActivity {
                     return;
                 }
 
-                if (result.code == ResultBean.CODE_UPDATE) {
-                    int count = result.data;
-                    if (count > 0) {
-                        Toast.makeText(getApplicationContext(), "密码修改成功", Toast.LENGTH_SHORT).show();
-                        etPassword.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(mContext, LoginActivity.class);
-                                startActivity(intent);
-                            }
-                        }, 1000);
-                    } else {
-                        Toast.makeText(getApplicationContext(), "密码修改失败", Toast.LENGTH_SHORT).show();
-                    }
+                if (result.code == ResultBean.CODE_UPDATE_SUCCESS) {
+                    Toast.makeText(getApplicationContext(), "密码修改成功", Toast.LENGTH_SHORT).show();
+                    etPassword.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(mContext, LoginActivity.class);
+                            startActivity(intent);
+                        }
+                    }, 1000);
+                } else if (result.code == ResultBean.CODE_UPDATE_FAILED) {
+                    Toast.makeText(getApplicationContext(), "密码修改失败", Toast.LENGTH_SHORT).show();
                 }
 
             }

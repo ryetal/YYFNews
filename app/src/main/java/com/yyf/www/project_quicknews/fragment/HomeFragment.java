@@ -23,6 +23,7 @@ public class HomeFragment extends BaseFragment {
 
     public HomeFragment() {
         // Required empty public constructor
+        mFragmentName = "home";
     }
 
     public static HomeFragment newInstance() {

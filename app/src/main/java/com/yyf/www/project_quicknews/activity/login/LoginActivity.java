@@ -19,6 +19,7 @@ import com.yyf.www.project_quicknews.global.GlobalValues;
 import com.yyf.www.project_quicknews.net.IUserService;
 import com.yyf.www.project_quicknews.utils.PatternUtil;
 import com.yyf.www.project_quicknews.utils.SharedPreferencesUtil;
+import com.yyf.www.project_quicknews.utils.ToastUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -144,12 +145,12 @@ public class LoginActivity extends BaseActivity {
                 ResultBean<UserBean> result = response.body();
 
                 if (result.code == ResultBean.CODE_ERROR) {
-                    Toast.makeText(getApplicationContext(), result.msg, Toast.LENGTH_SHORT).show();
+                    ToastUtil.showToast(result.msg, Toast.LENGTH_SHORT);
                     return;
                 }
 
                 if (result.code == ResultBean.CODE_SINGLE_NOT_HAVE) {
-                    Toast.makeText(getApplicationContext(), "用户名或密码错误，登录失败", Toast.LENGTH_SHORT).show();
+                    ToastUtil.showToast("用户名或密码错误，登录失败", Toast.LENGTH_SHORT);
                     return;
                 }
 
@@ -164,7 +165,7 @@ public class LoginActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ResultBean<UserBean>> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "网络请求失败!", Toast.LENGTH_SHORT).show();
+                ToastUtil.showToast("网络请求失败", Toast.LENGTH_SHORT);
             }
         });
 

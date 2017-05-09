@@ -3,26 +3,23 @@ package com.yyf.www.project_quicknews.activity.register;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yyf.www.project_quicknews.R;
+import com.yyf.www.project_quicknews.activity.BaseActivity;
 import com.yyf.www.project_quicknews.utils.PatternUtil;
 
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends BaseActivity {
 
     private Context mContext = this;
 
@@ -34,7 +31,6 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText etPasswordAgain;
     private Button btnRegister;
     private TextView tvAgreement;
-
 
     //倒计时
     private CountDownTimer mCountDownTimer = new CountDownTimer(60000, 1000) {
@@ -52,23 +48,14 @@ public class RegisterActivity extends AppCompatActivity {
     };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_register);
-
-        getViews();
-        initViews();
-        setListeners();
-        initDatas();
+    protected int getContentViewId() {
+        return R.layout.activity_register;
     }
 
-    /**
-     * 获取View
-     */
-    private void getViews() {
+    @Override
+    protected void getViews() {
+        super.getViews();
+
         tbarRegister = (Toolbar) this.findViewById(R.id.tbarRegister);
         etPhoneNumber = (EditText) this.findViewById(R.id.etUserName);
         etVerificationCode = (EditText) this.findViewById(R.id.etVerificationCode);
@@ -79,26 +66,21 @@ public class RegisterActivity extends AppCompatActivity {
         tvAgreement = (TextView) this.findViewById(R.id.tvAgreement);
     }
 
-    /**
-     * 初始化View
-     */
-    private void initViews() {
-        tbarRegister.setNavigationIcon(R.drawable.back);
-        tbarRegister.setTitle(getResources().getText(R.string.user_register));
+    @Override
+    protected void initViews() {
+        super.initViews();
 
         setAgreementText();
     }
 
-    /**
-     * 设置监听
-     */
-    private void setListeners() {
+    @Override
+    protected void setListeners() {
+        super.setListeners();
 
         //导航栏回退
         tbarRegister.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 finish();
             }
         });
@@ -114,7 +96,6 @@ public class RegisterActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "请输入正确的手机号", Toast.LENGTH_LONG).show();
                     return;
                 }
-
 
                 //等待倒计时
                 btnSendVerificationCode.setEnabled(false);
@@ -134,13 +115,6 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    /**
-     * 初始化数据
-     */
-    private void initDatas() {
-
     }
 
     /**
@@ -201,9 +175,7 @@ public class RegisterActivity extends AppCompatActivity {
 
 
     /**
-     * 注册：连接服务器
-     *
-     * @return
+     * 注册
      */
     private boolean register() {
         return true;
@@ -214,5 +186,13 @@ public class RegisterActivity extends AppCompatActivity {
 //        Intent intent = new Intent(mContext, LoginActivity.class);
 //        startActivity(intent);
 //        finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        mCountDownTimer.cancel();
+        mCountDownTimer = null;
     }
 }
