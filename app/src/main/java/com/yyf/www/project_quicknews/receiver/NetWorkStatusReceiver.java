@@ -11,7 +11,7 @@ import com.yyf.www.project_quicknews.utils.NetUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
-public class NetWorkStatusReceiver extends BroadcastReceiver {
+public class NetworkStatusReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
