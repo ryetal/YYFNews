@@ -47,6 +47,9 @@ public abstract class BaseNetworkFragment<T> extends BaseFragment {
         @Override
         protected void onResponse(T result) {
             BaseNetworkFragment fragment = (BaseNetworkFragment) mWeakReference.get();
+            if (fragment == null || !fragment.isAdded()) {
+                return;
+            }
             fragment.isRequesting = false;
             if (result == null) {
                 Log.i(GlobalValues.TAG, fragment.mFragmentName + " - 【onResponse】 failure");
@@ -66,6 +69,9 @@ public abstract class BaseNetworkFragment<T> extends BaseFragment {
         @Override
         protected void onFailure(IOException e) {
             BaseNetworkFragment fragment = (BaseNetworkFragment) mWeakReference.get();
+            if (fragment == null || !fragment.isAdded()) {
+                return;
+            }
             Log.i(GlobalValues.TAG, fragment.mFragmentName + " - 【onFailure】 request 失败");
             fragment.isRequesting = false;
             fragment.doOnFailure();
@@ -96,8 +102,8 @@ public abstract class BaseNetworkFragment<T> extends BaseFragment {
         super.onCreate(savedInstanceState);
 
         mClient = new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS).build();
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .readTimeout(5, TimeUnit.SECONDS).build();
     }
 
     @Override

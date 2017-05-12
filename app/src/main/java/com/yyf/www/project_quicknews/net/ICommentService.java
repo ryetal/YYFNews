@@ -15,9 +15,8 @@ import retrofit2.http.Query;
 
 public interface ICommentService {
 
-    @GET("servlet/CommentServlet")
-    Call<ResultBean<List<CommentBean>>> getComments(@Query("action") String action,
-                                                    @Query("newsId") int newsId,
+    @GET("servlet/CommentServlet?action=getComments")
+    Call<ResultBean<List<CommentBean>>> getComments(@Query("newsId") int newsId,
                                                     @Query("offset") int offset,
                                                     @Query("size") int size);
 

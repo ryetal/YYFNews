@@ -15,8 +15,7 @@ import retrofit2.http.Query;
 
 public interface INewsService {
 
-    @GET("servlet/NewsServlet")
-    Call<ResultBean<List<NewsBean>>> getNews(@Query("action") String action,
-                                             @Query("keyword") String keyword);
+    @GET("servlet/NewsServlet?action=getNewsByKeyword")
+    Call<ResultBean<List<NewsBean>>> getNewsByKeyword(@Query("keyword") String keyword);
 
 }

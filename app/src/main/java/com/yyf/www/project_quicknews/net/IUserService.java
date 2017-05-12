@@ -15,15 +15,18 @@ import retrofit2.http.POST;
 public interface IUserService {
 
     @FormUrlEncoded
-    @POST("servlet/UserServlet")
-    Call<ResultBean<UserBean>> login(@Field("action") String action,
-                                     @Field("userName") String userName,
+    @POST("servlet/UserServlet?action=login")
+    Call<ResultBean<UserBean>> login(@Field("telephone") String telephone,
                                      @Field("password") String password);
 
     @FormUrlEncoded
-    @POST("servlet/UserServlet")
-    Call<ResultBean<Integer>> resetPassword(@Field("action") String action,
-                                            @Field("telephone") String telephone,
+    @POST("servlet/UserServlet?action=resetPassword")
+    Call<ResultBean<Integer>> resetPassword(@Field("telephone") String telephone,
                                             @Field("newPassword") String newPassword);
+
+    @FormUrlEncoded
+    @POST("servlet/UserServlet?action=register")
+    Call<ResultBean<Object>> regiseter(@Field("telephone") String telephone,
+                                       @Field("password") String password);
 
 }

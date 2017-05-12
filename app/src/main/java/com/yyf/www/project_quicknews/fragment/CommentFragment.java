@@ -111,7 +111,7 @@ public class CommentFragment extends BaseFragment {
      */
     private void doRequest(int offset) {
 
-        mCall = mCommentService.getComments("getComments", mNewsId, offset, SIZE);
+        mCall = mCommentService.getComments(mNewsId, offset, SIZE);
         mCall.enqueue(new Callback<ResultBean<List<CommentBean>>>() {
             @Override
             public void onResponse(Call<ResultBean<List<CommentBean>>> call, Response<ResultBean<List<CommentBean>>> response) {
@@ -121,31 +121,36 @@ public class CommentFragment extends BaseFragment {
 
                 ResultBean<List<CommentBean>> result = response.body();
 
-                if (result.code == ResultBean.CODE_ERROR) {
-                    ToastUtil.showToast(result.msg,Toast.LENGTH_SHORT);
+                if (result.code == ResultBean.CODE_SQL_OPERATOR_ERROR) {
+                    ToastUtil.showToast(result.msg, Toast.LENGTH_SHORT);
                     return;
                 }
 
-                if (result.code == ResultBean.CODE_DATASET_EMPTY) {
-                    isCompleteLoading = true;
-                    lvComments.completeLoading();
-                    return;
-                }
 
-                if (result.code == ResultBean.CODE_DATASET_NOT_EMPTY) {
+                if (result.code == ResultBean.CODE_QUERY_SUCCESS) {
+
                     List<CommentBean> datas = result.data;
-                    if (datas.size() < SIZE) {
+
+                    if (datas == null) {
                         isCompleteLoading = true;
                         lvComments.completeLoading();
+                        mAdapter.notifyDataSetChanged();  //需要这一句，否则无法显示footer
+                    } else {
+                        if (datas.size() < SIZE) {
+                            isCompleteLoading = true;
+                            lvComments.completeLoading();
+                        }
+                        mAdapter.addDatas(datas);
                     }
-                    mAdapter.addDatas(datas);
                 }
 
             }
 
             @Override
             public void onFailure(Call<ResultBean<List<CommentBean>>> call, Throwable t) {
-
+                if (call.isCanceled()) {
+                    return;
+                }
                 ToastUtil.showToast("网络请求失败!", Toast.LENGTH_SHORT);
                 lvComments.hideFooter();
                 isLoading = false;
@@ -157,7 +162,7 @@ public class CommentFragment extends BaseFragment {
     public void onDestroyView() {
         super.onDestroyView();
 
-        if (mCall != null) {
+        if (mCall != null) {  //界面不可见的时候，cancel网络请求
             mCall.cancel();
         }
     }

@@ -120,46 +120,56 @@ public class FindPwdStepTwoActivity extends BaseActivity {
 
         String newPassword = etPassword.getText().toString();
 
-        mCall = mUserService.resetPassword("resetPassword", mTelephone, newPassword);
+        mCall = mUserService.resetPassword(mTelephone, newPassword);
         mCall.enqueue(new Callback<ResultBean<Integer>>() {
-            @Override
-            public void onResponse(Call<ResultBean<Integer>> call, Response<ResultBean<Integer>> response) {
+                          @Override
+                          public void onResponse(Call<ResultBean<Integer>> call, Response<ResultBean<Integer>> response) {
 
-                ResultBean<Integer> result = response.body();
+                              ResultBean<Integer> result = response.body();
 
-                if (result.code == ResultBean.CODE_ERROR) {
-                    Toast.makeText(getApplicationContext(), result.msg, Toast.LENGTH_SHORT).show();
-                    return;
-                }
+                              if (result.code == ResultBean.CODE_SQL_OPERATOR_ERROR) {
+                                  Toast.makeText(getApplicationContext(), result.msg, Toast.LENGTH_SHORT).show();
+                                  return;
+                              }
 
-                if (result.code == ResultBean.CODE_UPDATE_SUCCESS) {
-                    Toast.makeText(getApplicationContext(), "密码修改成功", Toast.LENGTH_SHORT).show();
-                    etPassword.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(mContext, LoginActivity.class);
-                            startActivity(intent);
-                        }
-                    }, 1000);
-                } else if (result.code == ResultBean.CODE_UPDATE_FAILED) {
-                    Toast.makeText(getApplicationContext(), "密码修改失败", Toast.LENGTH_SHORT).show();
-                }
+                              if (result.code == ResultBean.CODE_UPDATE_SUCCESS) {
 
-            }
+                                  Integer count = result.data;
+                                  if (count > 0) {
+                                      Toast.makeText(getApplicationContext(), "密码修改成功", Toast.LENGTH_SHORT).show();
+                                      etPassword.postDelayed(new Runnable() {
+                                          @Override
+                                          public void run() {
+                                              Intent intent = new Intent(mContext, LoginActivity.class);
+                                              startActivity(intent);
+                                          }
+                                      }, 1000);
+                                  } else {
+                                      Toast.makeText(getApplicationContext(), "密码修改失败", Toast.LENGTH_SHORT).show();
+                                  }
+                              }
 
-            @Override
-            public void onFailure(Call<ResultBean<Integer>> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "网络请求失败!", Toast.LENGTH_SHORT).show();
-            }
-        });
+                          }
+
+                          @Override
+                          public void onFailure(Call<ResultBean<Integer>> call, Throwable t) {
+                              if (call.isCanceled()) {  //主动取消的时候
+                                  return;
+                              }
+                              Toast.makeText(getApplicationContext(), "网络请求失败!", Toast.LENGTH_SHORT).show();
+                          }
+                      }
+
+        );
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
 
         if (mCall != null) {
             mCall.cancel();
         }
     }
+
 }

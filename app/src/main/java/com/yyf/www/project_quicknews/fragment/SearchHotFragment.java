@@ -103,19 +103,26 @@ public class SearchHotFragment extends BaseFragment {
 
                 ResultBean<List<String>> result = response.body();
 
-                if (result.code == ResultBean.CODE_ERROR) {
-                    ToastUtil.showToast(result.msg,Toast.LENGTH_SHORT);
-                } else if (result.code == ResultBean.CODE_DATASET_EMPTY) {
-                    //
-                } else if (result.code == ResultBean.CODE_DATASET_NOT_EMPTY) {
+                if (result.code == ResultBean.CODE_SQL_OPERATOR_ERROR) {
+                    ToastUtil.showToast(result.msg, Toast.LENGTH_SHORT);
+                    return;
+                }
+
+                if (result.code == ResultBean.CODE_QUERY_SUCCESS) {
                     List<String> datas = result.data;
-                    mAdapter.addDatas(datas);
+                    if (datas == null) {
+                        //
+                    } else {
+                        mAdapter.addDatas(datas);
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<ResultBean<List<String>>> call, Throwable t) {
-
+                if (call.isCanceled()) {
+                    return;
+                }
                 ToastUtil.showToast("网络请求失败!", Toast.LENGTH_SHORT);
             }
         });

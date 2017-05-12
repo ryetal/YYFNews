@@ -73,6 +73,7 @@ public class NewsDetailActivity extends BaseActivity {
 
     @Override
     protected void initViews() {
+        super.initViews();
 
         //初始化WebView
         wvNews.getSettings().setJavaScriptEnabled(true);

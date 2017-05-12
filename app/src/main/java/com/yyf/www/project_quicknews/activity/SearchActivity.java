@@ -14,8 +14,8 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.yyf.www.project_quicknews.R;
-import com.yyf.www.project_quicknews.bean.event.SearchHistoryEvent;
 import com.yyf.www.project_quicknews.bean.event.SearchEvent;
+import com.yyf.www.project_quicknews.bean.event.SearchHistoryEvent;
 import com.yyf.www.project_quicknews.fragment.SearchHotAndHistoryFragment;
 import com.yyf.www.project_quicknews.fragment.SearchListFragment;
 import com.yyf.www.project_quicknews.view.SearchEditText;
@@ -118,12 +118,13 @@ public class SearchActivity extends BaseActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
                 if (TextUtils.isEmpty(s)) {
-                    mFragmentManager.beginTransaction().hide(mSearchListFragment).commit();
-                    mFragmentManager.beginTransaction().show(mSearchHotAndHistoryFragment).commit();
+                    mFragmentManager.beginTransaction().hide(mSearchListFragment)
+                            .show(mSearchHotAndHistoryFragment)
+                            .commit();
                 } else {
                     mSearchListFragment.updateSearchListItems(s.toString());
-                    mFragmentManager.beginTransaction().hide(mSearchHotAndHistoryFragment).commit();
-                    mFragmentManager.beginTransaction().show(mSearchListFragment).commit();
+                    mFragmentManager.beginTransaction().hide(mSearchHotAndHistoryFragment)
+                            .show(mSearchListFragment).commit();
                 }
 
             }

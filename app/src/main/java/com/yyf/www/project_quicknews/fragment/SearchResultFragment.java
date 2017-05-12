@@ -120,30 +120,41 @@ public class SearchResultFragment extends BaseFragment {
     protected void initDatas() {
         super.initDatas();
 
-        mCall = mNewsService.getNews("getNewsByKeyword", mKeyword);
+        mCall = mNewsService.getNewsByKeyword(mKeyword);
         mCall.enqueue(new Callback<ResultBean<List<NewsBean>>>() {
-            @Override
-            public void onResponse(Call<ResultBean<List<NewsBean>>> call, Response<ResultBean<List<NewsBean>>> response) {
+                          @Override
+                          public void onResponse(Call<ResultBean<List<NewsBean>>> call, Response<ResultBean<List<NewsBean>>> response) {
 
-                ResultBean<List<NewsBean>> result = response.body();
+                              ResultBean<List<NewsBean>> result = response.body();
 
-                if (result.code == ResultBean.CODE_ERROR) {
-                    ToastUtil.showToast(result.msg, Toast.LENGTH_SHORT);
-                } else if (result.code == ResultBean.CODE_DATASET_EMPTY) {
-                    ToastUtil.showToast(getString(R.string.no_data), Toast.LENGTH_SHORT);
-                    tvEmptyView.setText(getString(R.string.empty));
-                } else if (result.code == ResultBean.CODE_DATASET_NOT_EMPTY) {
-                    mAdapter.resetDatas(result.data);
-                }
+                              if (result.code == ResultBean.CODE_SQL_OPERATOR_ERROR) {
+                                  ToastUtil.showToast(result.msg, Toast.LENGTH_SHORT);
+                                  return;
+                              }
 
-            }
+                              if (result.code == ResultBean.CODE_QUERY_SUCCESS) {
 
-            @Override
-            public void onFailure(Call<ResultBean<List<NewsBean>>> call, Throwable t) {
+                                  List<NewsBean> datas = result.data;
+                                  if (datas == null) {
+                                      ToastUtil.showToast(getString(R.string.no_data), Toast.LENGTH_SHORT);
+                                      tvEmptyView.setText(getString(R.string.empty));
+                                  } else {
+                                      mAdapter.resetDatas(result.data);
+                                  }
+                              }
 
-                ToastUtil.showToast("网络请求失败!", Toast.LENGTH_SHORT);
-            }
-        });
+                          }
+
+                          @Override
+                          public void onFailure(Call<ResultBean<List<NewsBean>>> call, Throwable t) {
+                              if (call.isCanceled()) {
+                                  return;
+                              }
+                              ToastUtil.showToast("网络请求失败!", Toast.LENGTH_SHORT);
+                          }
+                      }
+
+        );
 
     }
 

@@ -24,7 +24,7 @@ public class FindPwdStepOneActivity extends BaseVerifyActivity {
     private Button btnNextStep;
 
     //倒计时
-    private CountDownTimer mCountDownTimer = new CountDownTimer(60000, 1000) {
+    private CountDownTimer mCountDownTimer = new CountDownTimer(30000, 1000) {
 
         @Override
         public void onTick(long millisUntilFinished) {
@@ -47,7 +47,7 @@ public class FindPwdStepOneActivity extends BaseVerifyActivity {
     protected void getViews() {
         super.getViews();
 
-        etPhoneNumber = (EditText) this.findViewById(R.id.etUserName);
+        etPhoneNumber = (EditText) this.findViewById(R.id.etTelephone);
         etVerificationCode = (EditText) this.findViewById(R.id.etVerificationCode);
         tbarFindPwdStepOne = (Toolbar) this.findViewById(R.id.tbarFindPwdStepOne);
         btnSendVerificationCode = (Button) this.findViewById(R.id.btnSendVerificationCode);

@@ -3,6 +3,7 @@ package com.yyf.www.project_quicknews.activity.register;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
@@ -15,11 +16,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yyf.www.project_quicknews.R;
-import com.yyf.www.project_quicknews.activity.BaseActivity;
+import com.yyf.www.project_quicknews.activity.BaseVerifyActivity;
+import com.yyf.www.project_quicknews.bean.ResultBean;
+import com.yyf.www.project_quicknews.global.GlobalValues;
+import com.yyf.www.project_quicknews.net.IUserService;
 import com.yyf.www.project_quicknews.utils.PatternUtil;
+import com.yyf.www.project_quicknews.utils.ToastUtil;
+
+import cn.smssdk.SMSSDK;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
-public class RegisterActivity extends BaseActivity {
+public class RegisterActivity extends BaseVerifyActivity {
 
     private Context mContext = this;
 
@@ -32,8 +44,11 @@ public class RegisterActivity extends BaseActivity {
     private Button btnRegister;
     private TextView tvAgreement;
 
+    private IUserService mUserService;
+    private Call<ResultBean<Object>> mCall;
+
     //倒计时
-    private CountDownTimer mCountDownTimer = new CountDownTimer(60000, 1000) {
+    private CountDownTimer mCountDownTimer = new CountDownTimer(30000, 1000) {
 
         @Override
         public void onTick(long millisUntilFinished) {
@@ -53,11 +68,43 @@ public class RegisterActivity extends BaseActivity {
     }
 
     @Override
+    protected void doWhenSuccessGetVerificationCode() {
+        ToastUtil.showToast("获取验证码【成功】", Toast.LENGTH_LONG);
+    }
+
+    @Override
+    protected void doWhenSuccessVerify() {
+        register(); //验证码验证成功后，进行注册
+    }
+
+    @Override
+    protected void doWhenFailedGetVerificationCode() {
+        ToastUtil.showToast("获取验证码【失败】", Toast.LENGTH_LONG);
+    }
+
+    @Override
+    protected void doWhenFailedVerify() {
+        ToastUtil.showToast("验证【失败】", Toast.LENGTH_LONG);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(GlobalValues.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        mUserService = retrofit.create(IUserService.class);
+    }
+
+    @Override
     protected void getViews() {
         super.getViews();
 
         tbarRegister = (Toolbar) this.findViewById(R.id.tbarRegister);
-        etPhoneNumber = (EditText) this.findViewById(R.id.etUserName);
+        etPhoneNumber = (EditText) this.findViewById(R.id.etTelephone);
         etVerificationCode = (EditText) this.findViewById(R.id.etVerificationCode);
         btnSendVerificationCode = (Button) this.findViewById(R.id.btnSendVerificationCode);
         etPassword = (EditText) this.findViewById(R.id.etPassword);
@@ -100,6 +147,9 @@ public class RegisterActivity extends BaseActivity {
                 //等待倒计时
                 btnSendVerificationCode.setEnabled(false);
                 mCountDownTimer.start();
+
+                //获取验证码。会触发EventHandler中的回调方法。
+                SMSSDK.getVerificationCode("86", phoneNumber);
             }
         });
 
@@ -108,10 +158,11 @@ public class RegisterActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
 
-                if (localVerify()) {
-                    if (register()) {
-                        Toast.makeText(getApplicationContext(), "注册成功", Toast.LENGTH_LONG).show();
-                    }
+                if (localVerify()) { //本地格式检验
+                    //验证验证码
+                    String phoneNumber = etPhoneNumber.getText().toString();
+                    String code = etVerificationCode.getText().toString();
+                    SMSSDK.submitVerificationCode("86", phoneNumber, code);
                 }
             }
         });
@@ -178,14 +229,60 @@ public class RegisterActivity extends BaseActivity {
      * 注册
      */
     private boolean register() {
+
+        String telephone = etPhoneNumber.getText().toString();
+        String password = etPassword.getText().toString();
+
+        mCall = mUserService.regiseter(telephone,password);
+        mCall.enqueue(new Callback<ResultBean<Object>>() {
+            @Override
+            public void onResponse(Call<ResultBean<Object>> call, Response<ResultBean<Object>> response) {
+
+                ResultBean<Object> result = response.body();
+
+                if (result.code == ResultBean.CODE_SQL_OPERATOR_ERROR) {
+                    ToastUtil.showToast(result.msg, Toast.LENGTH_SHORT);
+                    return;
+                }
+
+                if (result.code == ResultBean.CODE_IS_EXSITED) {
+                    Boolean isExisted = (Boolean) result.data;
+                    if (isExisted) {
+                        ToastUtil.showToast("该手机号码已经被注册了!", Toast.LENGTH_SHORT);
+                    }
+                    return;
+                }
+
+                if (result.code == ResultBean.CODE_INSERT_SUCCESS) {
+                    Integer count = (Integer) result.data;
+                    if (count > 0) {
+                        ToastUtil.showToast("注册成功!", Toast.LENGTH_SHORT);
+                    } else {
+                        ToastUtil.showToast("注册失败!", Toast.LENGTH_SHORT);
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<ResultBean<Object>> call, Throwable t) {
+                if (call.isCanceled()) {
+                    return;
+                }
+                ToastUtil.showToast("网络请求失败", Toast.LENGTH_SHORT);
+            }
+        });
+
         return true;
     }
 
     @Override
-    public void onBackPressed() {
-//        Intent intent = new Intent(mContext, LoginActivity.class);
-//        startActivity(intent);
-//        finish();
+    protected void onPause() {
+        super.onPause();
+
+        if (mCall != null) {
+            mCall.cancel();
+        }
     }
 
     @Override

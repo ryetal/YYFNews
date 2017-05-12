@@ -26,13 +26,13 @@
             android:src="@mipmap/ic_launcher" />
 
         <com.yyf.www.project_quicknews.view.EditTextWithDelete
-            android:id="@+id/etUserName"
+            android:id="@+id/etTelephone"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimen_150"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/dimen_60"
             android:gravity="center"
-            android:hint="@string/input_username"
+            android:hint="@string/input_phone_number"
             android:inputType="phone"
             android:textColorHint="#cccccccc" />
 

@@ -24,7 +24,7 @@
         android:orientation="vertical">
 
         <com.yyf.www.project_quicknews.view.EditTextWithDelete
-            android:id="@+id/etUserName"
+            android:id="@+id/etTelephone"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimen_150"
             android:layout_gravity="center"

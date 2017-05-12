@@ -33,7 +33,7 @@ public class LoginActivity extends BaseActivity {
 
     private Context mContext = this;
 
-    private EditText etUserName;
+    private EditText etTelephone;
     private EditText etPassword;
     private TextView tvFindPwd;
     private Button btnLogin;
@@ -63,7 +63,7 @@ public class LoginActivity extends BaseActivity {
     protected void getViews() {
         super.getViews();
 
-        etUserName = (EditText) this.findViewById(R.id.etUserName);
+        etTelephone = (EditText) this.findViewById(R.id.etTelephone);
         etPassword = (EditText) this.findViewById(R.id.etPassword);
         tvFindPwd = (TextView) this.findViewById(R.id.tvFindPwd);
         btnLogin = (Button) this.findViewById(R.id.btnLogin);
@@ -112,11 +112,21 @@ public class LoginActivity extends BaseActivity {
      */
     private boolean localVerify() {
 
-        String userName = etUserName.getText().toString();
+        String telephone = etTelephone.getText().toString();
         String password = etPassword.getText().toString();
 
-        if (userName.equals("")) {
-            Toast.makeText(getApplicationContext(), "请输入用户名/手机号", Toast.LENGTH_LONG).show();
+        if (telephone.equals("")) {
+            Toast.makeText(getApplicationContext(), "请输入手机号", Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        if (password.equals("")) {
+            Toast.makeText(getApplicationContext(), "请输入密码", Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        if (!PatternUtil.isPhoneNumberCorrect(telephone)) {
+            Toast.makeText(getApplicationContext(), "请输入正确的手机号", Toast.LENGTH_LONG).show();
             return false;
         }
 
@@ -134,37 +144,40 @@ public class LoginActivity extends BaseActivity {
      */
     private void login() {
 
-        String userName = etUserName.getText().toString();
+        String telephone = etTelephone.getText().toString();
         String password = etPassword.getText().toString();
 
-        mCall = mUserService.login("login", userName, password);
+        mCall = mUserService.login(telephone, password);
         mCall.enqueue(new Callback<ResultBean<UserBean>>() {
             @Override
             public void onResponse(Call<ResultBean<UserBean>> call, Response<ResultBean<UserBean>> response) {
 
                 ResultBean<UserBean> result = response.body();
 
-                if (result.code == ResultBean.CODE_ERROR) {
+                if (result.code == ResultBean.CODE_SQL_OPERATOR_ERROR) {
                     ToastUtil.showToast(result.msg, Toast.LENGTH_SHORT);
                     return;
                 }
 
-                if (result.code == ResultBean.CODE_SINGLE_NOT_HAVE) {
-                    ToastUtil.showToast("用户名或密码错误，登录失败", Toast.LENGTH_SHORT);
-                    return;
-                }
+                if (result.code == ResultBean.CODE_QUERY_SUCCESS) {
 
-                if (result.code == ResultBean.CODE_SINGLE_HAVE) {
-                    UserBean user = response.body().data;
-                    writeSPWhenLogin(user);
-                    EventBus.getDefault().post(new LoginEvent(user));
-                    finish();
+                    UserBean user = result.data;
+                    if (user == null) {
+                        ToastUtil.showToast("用户名或密码错误，登录失败", Toast.LENGTH_SHORT);
+                    } else {
+                        writeSPWhenLogin(user);
+                        EventBus.getDefault().post(new LoginEvent(user));
+                        finish();
+                    }
                 }
 
             }
 
             @Override
             public void onFailure(Call<ResultBean<UserBean>> call, Throwable t) {
+                if (call.isCanceled()) {  //主动取消的时候
+                    return;
+                }
                 ToastUtil.showToast("网络请求失败", Toast.LENGTH_SHORT);
             }
         });
@@ -190,8 +203,8 @@ public class LoginActivity extends BaseActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
 
         if (mCall != null) {
             mCall.cancel();

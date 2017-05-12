@@ -77,10 +77,12 @@ public class HomeChildAdapter extends BaseAdapter {
                 && news.getImage3().equals("")) {
             holder.llytImages.setVisibility(View.GONE);
         } else {
+            holder.llytImages.setVisibility(View.VISIBLE);
             for (int i = 0; i < images.length; i++) {
                 if (images[i].equals("")) {
                     holder.imageViews[i].setVisibility(View.GONE);
                 } else {
+                    holder.imageViews[i].setVisibility(View.VISIBLE);
                     Picasso.with(mContext).load(images[i])
                             .placeholder(R.mipmap.ic_launcher)
                             .into(holder.imageViews[i]);
@@ -109,12 +111,12 @@ public class HomeChildAdapter extends BaseAdapter {
         TextView tvTime;
     }
 
-    public void addDatas(List<NewsBean> datas){
+    public void addDatas(List<NewsBean> datas) {
         mDatas.addAll(datas);
         notifyDataSetChanged();
     }
 
-    public void resetDatas(List<NewsBean> datas){
+    public void resetDatas(List<NewsBean> datas) {
         mDatas.clear();
         mDatas.addAll(datas);
         notifyDataSetChanged();

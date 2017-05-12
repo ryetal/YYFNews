@@ -245,42 +245,42 @@ public class HomeChildFragment<T extends ResultBean<List<NewsBean>>> extends Bas
 
         resetViewsAfterOneLoading();
 
-        if (result.code == ResultBean.CODE_ERROR) {
-            ToastUtil.showToast(result.msg,Toast.LENGTH_SHORT);
+        if (result.code == ResultBean.CODE_SQL_OPERATOR_ERROR) {
+            ToastUtil.showToast(result.msg, Toast.LENGTH_SHORT);
             lvHomeChild.doAfterOneLoading(LoadListView.STATUS_HIDE);
             return;
         }
 
-        if (result.code == ResultBean.CODE_DATASET_EMPTY) {
-            lvHomeChild.doAfterOneLoading(LoadListView.STATUS_COMPLETE);
-            return;
-        }
-
-        if (result.code == ResultBean.CODE_DATASET_NOT_EMPTY) {
+        if (result.code == ResultBean.CODE_QUERY_SUCCESS) {
             List<NewsBean> datas = result.data;
-            lvHomeChild.doAfterOneLoading(datas.size() < SIZE ?
-                    LoadListView.STATUS_COMPLETE : LoadListView.STATUS_HIDE);
-            resetViewsAfterOneLoading();
-            if (mCleared) {
-                mAdapter.resetDatas(datas);
+            if (datas == null) {
+                lvHomeChild.doAfterOneLoading(LoadListView.STATUS_COMPLETE);
             } else {
-                mAdapter.addDatas(datas);
+                lvHomeChild.doAfterOneLoading(datas.size() < SIZE ?
+                        LoadListView.STATUS_COMPLETE : LoadListView.STATUS_HIDE);
+                resetViewsAfterOneLoading();
+                if (mCleared) {
+                    mAdapter.resetDatas(datas);
+                } else {
+                    mAdapter.addDatas(datas);
+                }
             }
         }
+
+
     }
 
     @Override
     void doOnResponseFailure() {
-        lvHomeChild.doAfterOneLoading(LoadListView.STATUS_HIDE);
         resetViewsAfterOneLoading();
+        lvHomeChild.doAfterOneLoading(LoadListView.STATUS_HIDE);
     }
 
     @Override
     void doOnFailure() {
-
+        resetViewsAfterOneLoading();
         ToastUtil.showToast("网络请求失败!", Toast.LENGTH_SHORT);
         lvHomeChild.doAfterOneLoading(LoadListView.STATUS_FAILED);
-        resetViewsAfterOneLoading();
     }
 
     /**
