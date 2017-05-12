@@ -14,12 +14,11 @@ public class ToastUtil {
 
     public static void showToast(String text, int length) {
         if (toast == null) {
-            toast = Toast.makeText(NewsApplication.getAppContext(), text, length);
+            toast = Toast.makeText(NewsApplication.getInstance(), text, length);
         } else {
             toast.setDuration(length);
             toast.setText(text);
         }
-
         toast.show();
     }
 

@@ -48,7 +48,7 @@ public class GlobalValues {
 
     ////////////////////////////////////////////////////////////////////////////
 
-    public static final String BASE_URL = "http://192.168.0.104:8080/YYFNewsServer/";
+    public static final String BASE_URL = "http://39.108.79.36:8080/YYFNewsServer/";
 
     public static final String SP_LOGIN = "login";
 

@@ -134,7 +134,7 @@ public class FindPwdStepTwoActivity extends BaseActivity {
 
                               if (result.code == ResultBean.CODE_UPDATE_SUCCESS) {
 
-                                  Integer count = result.data;
+                                  int count = result.data;
                                   if (count > 0) {
                                       Toast.makeText(getApplicationContext(), "密码修改成功", Toast.LENGTH_SHORT).show();
                                       etPassword.postDelayed(new Runnable() {

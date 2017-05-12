@@ -267,7 +267,6 @@ public class HomeChildFragment<T extends ResultBean<List<NewsBean>>> extends Bas
             }
         }
 
-
     }
 
     @Override

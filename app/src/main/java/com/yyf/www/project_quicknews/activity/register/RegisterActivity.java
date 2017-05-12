@@ -233,7 +233,7 @@ public class RegisterActivity extends BaseVerifyActivity {
         String telephone = etPhoneNumber.getText().toString();
         String password = etPassword.getText().toString();
 
-        mCall = mUserService.regiseter(telephone,password);
+        mCall = mUserService.regiseter(telephone, password);
         mCall.enqueue(new Callback<ResultBean<Object>>() {
             @Override
             public void onResponse(Call<ResultBean<Object>> call, Response<ResultBean<Object>> response) {
@@ -254,7 +254,7 @@ public class RegisterActivity extends BaseVerifyActivity {
                 }
 
                 if (result.code == ResultBean.CODE_INSERT_SUCCESS) {
-                    Integer count = (Integer) result.data;
+                    double count = (double) result.data;  //result.data是Double类型
                     if (count > 0) {
                         ToastUtil.showToast("注册成功!", Toast.LENGTH_SHORT);
                     } else {
